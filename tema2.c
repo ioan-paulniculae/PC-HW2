@@ -118,7 +118,7 @@ int main(){
     unsigned fooderr = 0;   //1 - daca eroare la generare mancare
 
     unsigned i;
-
+    unsigned speed_augment = 0;
 
     init_window();
     getmaxyx(wnd, gboard.nr_y, gboard.nr_x);
@@ -142,7 +142,7 @@ int main(){
     //pozitionare initiala
     snake.p[HEAD].x = gboard.nr_x  / 3;
     snake.p[HEAD].y = gboard.nr_y / 3 ;
-    mvaddch(snake.p[HEAD].y, snake.p[HEAD].x, 'o');
+    mvaddch(snake.p[HEAD].y, snake.p[HEAD].x, 'O');
 
     //dimensiune initiala
     snake.dim = 1;
@@ -154,8 +154,15 @@ int main(){
     while (NO_STOP){
 
         mverr = 0;
-        snake.last_x = snake.p[snake.dim - 1].x;
-        snake.last_y = snake.p[snake.dim - 1].y;
+
+        //actualizare coordonate
+        for (i = snake.dim; i > 0; i--){
+            snake.p[i].x = snake.p[i - 1].x;
+            snake.p[i].y = snake.p[i - 1].y;
+        }
+
+        snake.last_x = snake.p[snake.dim].x;
+        snake.last_y = snake.p[snake.dim].y;
 
         timeout(UNITY - snake.speed);
 
@@ -173,6 +180,11 @@ int main(){
 
                 food.x = rand() % gboard.nr_x;
                 food.y = rand() % gboard.nr_y;
+
+                if(food.x <= 2 || food.y <= 2){
+                    fooderr = 1;
+                    continue;
+                }
 
                 for (i = 0; i < snake.dim; i++){
 
@@ -247,11 +259,8 @@ int main(){
             break;
         }
 
-        if (over){
-            mvaddstr(10, 30, "GAME OVER");
-            getch();
-            break;
-        }
+
+
 
         //input
         switch (snake.input){
@@ -328,21 +337,44 @@ int main(){
 
         }
 
+        //verificare daca s-a lovit de el
+        for (i = 1; i < snake.dim; i ++){
+            if(snake.p[HEAD].x == snake.p[i].x &&
+                snake.p[HEAD].y == snake.p[i].y){
+                        over = 1;
+            }
+        }
+
+
+        if (over){
+            mvaddstr(10, gboard.nr_x / 3, "GAME OVER");
+            getch();
+            break;
+        }
 
         if (snake.p[HEAD].x == food.x &&
             snake.p[HEAD].y == food.y){
+
                 hungry = 1;
-            
-            }
+
+                snake.dim++;
+
+                snake.p[snake.dim].x = snake.last_x;
+                snake.p[snake.dim].y = snake.last_y;
+
+
+        }
 
 
         //sterge coada + inaintare cap
+            if(! hungry){
+                mvaddch(snake.last_y, snake.last_x, ' ');
+            }else{
+                mvaddch(snake.last_y, snake.last_x, 'O');
+            }
 
-        mvaddch(snake.last_y, snake.last_x, ' ');
-        mvaddch(snake.p[0].y, snake.p[0].x, 'o');
 
-
-
+        mvaddch(snake.p[0].y, snake.p[0].x, 'O');
 
         refresh();
 
