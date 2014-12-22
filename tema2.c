@@ -1,37 +1,61 @@
 #include <stdio.h>
 #include <ncurses.h>
 
-int main(){
+typedef struct {
+
+    int x;
+    int y;
+    unsigned dim;
+    int viteza;
+
+}snake;
+
+typedef struct {
+
+    int x;
+    int y;
+    int max_x;
+    int max_y;
+    unsigned nr_x;  //numarul de coloane
+    unsigned nr_y;  //numarul de linii
+
+}chenar;
+
+void initializare_tabla(){
 
     //initializare
     initscr();
     raw();
 
-    int y1 = 15;
-    int y2 = 20;
-    int x1 = 10;
-    int x2 = 25;
-    printw("Acesta e un text random, pentru test");
-    addch('a');
+    //mesaj initial
+    attron(A_UNDERLINE | A_BOLD);
+        mvprintw(0, 3, "SNAKE");
+        mvprintw(1, 1, "W - inainte");
+        mvprintw(2, 1, "A - stanga");
+        mvprintw(3, 1, "S - jos");
+        mvprintw(4, 1, "D - dreapta");
+    attroff(A_UNDERLINE | A_BOLD);
 
-    //atribuire de underline si standout
-    attron(A_STANDOUT | A_UNDERLINE);
-
-    move(12,13);
-    mvprintw(y1, x1, "TEST");
-
-    //oprire atribuire
-    attroff(A_STANDOUT | A_UNDERLINE);
-
-    start_color();
-    //functioneaza ca attron
+    //ascundere cursor
+    curs_set(0);
 
 
+}
+
+int main(){
+
+    initializare_tabla();
+    /*
     //foreground background
     init_pair(1,COLOR_RED, COLOR_BLUE);
+
     attron( COLOR_PAIR(1));
+
     printw("TESTCOLORAT");
+
     attroff(COLOR_PAIR(1));
+
+*/
     //inchidere
     getch();
     endwin();
