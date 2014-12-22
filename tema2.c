@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 
+#define SPATIERE 0
 typedef struct {
 
     int x;
@@ -8,23 +9,18 @@ typedef struct {
     unsigned dim;
     int viteza;
 
-}snake;
+}SNAKE;
 
 typedef struct {
 
-    int x;
-    int y;
-    int max_x;
-    int max_y;
     unsigned nr_x;  //numarul de coloane
     unsigned nr_y;  //numarul de linii
 
-}chenar;
+}BOARD;
 
-void initializare_tabla(){
+void init_window(){
 
     //initializare
-    initscr();
     raw();
 
     //mesaj initial
@@ -39,12 +35,65 @@ void initializare_tabla(){
     //ascundere cursor
     curs_set(0);
 
+    mvprintw(10, 10, "Apasa pentru a incepe jocul");
+    getch();
+    clear();
 
+
+}
+
+//functie care creaza un
+//chenar de dim_x * dim_y
+
+void create_gameboard(int dim_x, int dim_y){
+    int i;
+
+    //sus, orizontal
+    for (i = 1; i < dim_x + 1; i ++){
+        if (i % 2){
+            mvaddch(SPATIERE, i, '#');
+        }else{
+            mvaddch(SPATIERE, i, ' ');
+        }
+    }
+
+    //dreapta
+    for (i = SPATIERE; i < dim_y + SPATIERE; i++){
+        mvaddch(i, dim_x, '#');
+    }
+
+    //jos
+    for (i = 1; i < dim_x + 1; i++){
+        if (i % 2){
+            mvaddch(dim_y + SPATIERE, i, '#');
+        }else{
+            mvaddch(dim_y + SPATIERE, i, ' ');
+        }
+    }
+
+    //stanga
+    for (i = SPATIERE; i < dim_y + SPATIERE; i++){
+        mvaddch(i, 1, '#');
+    }
 }
 
 int main(){
 
-    initializare_tabla();
+    WINDOW *wnd = initscr();
+    BOARD gboard;
+    SNAKE s;
+
+    init_window();
+    getmaxyx(wnd, gboard.nr_y, gboard.nr_x);
+
+    /*
+    folosim efectiv un chenar de dimenisuni mai mici
+    pentru aspect
+    */
+    gboard.nr_x--;
+    gboard.nr_y--;
+
+    create_gameboard(gboard.nr_x, gboard.nr_y);
     /*
     //foreground background
     init_pair(1,COLOR_RED, COLOR_BLUE);
