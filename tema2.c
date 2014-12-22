@@ -5,6 +5,7 @@
 
 #define SPATIERE 0
 #define NO_STOP 1
+#define HEAD 0
 
 typedef struct {
     unsigned x;
@@ -20,6 +21,7 @@ typedef struct {
 
     unsigned dim;
     char input;
+    char lastinput;
 
 }SNAKE;
 
@@ -103,6 +105,10 @@ int main(){
     BOARD gboard;
     SNAKE snake;
 
+    unsigned over = 0;
+    unsigned quit = 0;
+
+
 
     init_window();
     getmaxyx(wnd, gboard.nr_y, gboard.nr_x);
@@ -137,37 +143,106 @@ int main(){
         snake.last_x = snake.p[snake.dim - 1].x;
         snake.last_y = snake.p[snake.dim - 1].y;
 
-        snake.input = getchar();
+        timeout(500);
+
+        snake.input = getch();
+
+        if (snake.input != ERR){
+            snake.lastinput = snake.input;
+        }
+
         snake.input = tolower (snake.input);
 
+
+
         if (snake.input == 'q'){
+            quit = 1;
+        }
+
+        if (quit){
+            break;
+        }
+
+        if (over){
+            clear();
+            mvaddstr(30, 30, "GAME OVER");
+            getch();
             break;
         }
 
         //input
         switch (snake.input){
             case 'a':
-                if(snake.p[0].x > 2){
-                    snake.p[0].x --;
+                if(snake.p[HEAD].x > 2){
+                    snake.p[HEAD].x --;
+                }else{
+                    over = 1;
+
                 }
                 break;
 
             case 's':
-                if (snake.p[0].y < gboard.nr_y + 1){
-                    snake.p[0].y++;
+                if (snake.p[HEAD].y < gboard.nr_y + 1){
+                    snake.p[HEAD].y++;
+                }else{
+                    over = 1;
                 }
                 break;
 
             case 'd':
                 if (snake.p[0].x < gboard.nr_x){
                     snake.p[0].x++;
+                }else{
+                    over = 1;
                 }
                 break;
             case 'w':
                 if (snake.p[0].y > 1){
                     snake.p[0].y --;
+                }else{
+                    over = 1;
+
                 }
                 break;
+
+            case ERR:
+                switch (snake.lastinput){
+                case 'a':
+                if(snake.p[HEAD].x > 2){
+                    snake.p[HEAD].x --;
+                }else{
+                    over = 1;
+
+                }
+                break;
+
+                case 's':
+                if (snake.p[HEAD].y < gboard.nr_y + 1){
+                    snake.p[HEAD].y++;
+                }else{
+                    over = 1;
+                }
+                break;
+
+                case 'd':
+                if (snake.p[0].x < gboard.nr_x){
+                    snake.p[0].x++;
+                }else{
+                    over = 1;
+                }
+                break;
+                case 'w':
+                if (snake.p[0].y > 1){
+                    snake.p[0].y --;
+                }else{
+                    over = 1;
+
+                }
+                break;
+
+            }
+                break;
+
         }
 
 
