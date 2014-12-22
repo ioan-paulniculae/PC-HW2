@@ -1,13 +1,20 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <ncurses.h>
 
 #define SPATIERE 0
-typedef struct {
+#define NO_STOP 1
 
+typedef struct {
     int x;
     int y;
+}PUNCT;
+
+typedef struct {
+
+    PUNCT *p;
     unsigned dim;
-    int viteza;
+    char input;
 
 }SNAKE;
 
@@ -34,6 +41,11 @@ void init_window(){
 
     //ascundere cursor
     curs_set(0);
+
+    //ascundem inputul
+    noecho();
+
+
 
     mvprintw(10, 10, "Apasa pentru a incepe jocul");
     getch();
@@ -79,9 +91,13 @@ void create_gameboard(int dim_x, int dim_y){
 
 int main(){
 
+    //nobuffering
+    cbreak();
+
     WINDOW *wnd = initscr();
     BOARD gboard;
-    SNAKE s;
+    SNAKE snake;
+
 
     init_window();
     getmaxyx(wnd, gboard.nr_y, gboard.nr_x);
@@ -94,17 +110,59 @@ int main(){
     gboard.nr_y--;
 
     create_gameboard(gboard.nr_x, gboard.nr_y);
-    /*
-    //foreground background
-    init_pair(1,COLOR_RED, COLOR_BLUE);
 
-    attron( COLOR_PAIR(1));
+    //din cauza chenarului
+    //dimensiunea efectiva s-a redus iar
+    gboard.nr_x -= 2;
+    gboard.nr_y -= 2;
 
-    printw("TESTCOLORAT");
+    snake.p = (PUNCT *) malloc (gboard.nr_x * gboard.nr_y * sizeof (PUNCT));
+    //pozitionare initiala
+    snake.p[0].x = gboard.nr_x  / 3;
+    snake.p[0].y = gboard.nr_y / 3 ;
+    snake.dim = 1;
+    mvaddch(snake.p[0].y, snake.p[0].x, '0');
 
-    attroff(COLOR_PAIR(1));
 
-*/
+    while (NO_STOP){
+
+        snake.input = getchar();
+        snake.input = tolower (snake.input);
+
+        if (snake.input == 'q'){
+            break;
+        }
+
+        switch (snake.input){
+            case 'a':
+                if(snake.x > 2){
+                    snake.x --;
+                }
+                break;
+
+            case 's':
+                if (snake.y < gboard.nr_y + 1){
+                    snake.y++;
+                }
+                break;
+
+            case 'd':
+                if (snake.x < gboard.nr_x){
+                    snake.x++;
+                }
+                break;
+            case 'w':
+                if (snake.y > 1){
+                    snake.y --;
+                }
+                break;
+        }
+        mvaddch(snake.y, snake.x, '0');
+        refresh();
+
+    }
+
+
     //inchidere
     getch();
     endwin();
