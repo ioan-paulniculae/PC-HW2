@@ -1,6 +1,6 @@
-![unnamed.png](https://bitbucket.org/repo/pXXRXM/images/2730471954-unnamed.png
+![unnamed.png](https://bitbucket.org/repo/pXXRXM/images/3712525168-unnamed.png))
 
-)De creat un joc snake, in care te misti cu W A S D si iesi cu Q
+De creat un joc snake, in care te misti cu W A S D si iesi cu Q
 Daca se implementeaza idei originale, de specificat in ReadME
 
 1 (30 pct) Implementare Snake
