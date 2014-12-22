@@ -10,7 +10,6 @@ Daca se implementeaza idei originale, de specificat in ReadME
 4 (20 pc) Speedin Snake
 
 5 (10 pct) Acceleration @ Snake
- ̆
-Doar C, nu C++
 
+Doar C, nu C++
 30 p Bonus - High Scores etc
