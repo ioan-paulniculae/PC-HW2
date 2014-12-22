@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <ncurses.h>
 
@@ -6,13 +7,17 @@
 #define NO_STOP 1
 
 typedef struct {
-    int x;
-    int y;
+    unsigned x;
+    unsigned y;
 }PUNCT;
 
 typedef struct {
 
     PUNCT *p;
+
+    unsigned last_x;
+    unsigned last_y;
+
     unsigned dim;
     char input;
 
@@ -117,14 +122,20 @@ int main(){
     gboard.nr_y -= 2;
 
     snake.p = (PUNCT *) malloc (gboard.nr_x * gboard.nr_y * sizeof (PUNCT));
+
     //pozitionare initiala
     snake.p[0].x = gboard.nr_x  / 3;
     snake.p[0].y = gboard.nr_y / 3 ;
+
     snake.dim = 1;
+
     mvaddch(snake.p[0].y, snake.p[0].x, '0');
 
 
     while (NO_STOP){
+
+        snake.last_x = snake.p[snake.dim - 1].x;
+        snake.last_y = snake.p[snake.dim - 1].y;
 
         snake.input = getchar();
         snake.input = tolower (snake.input);
@@ -133,31 +144,37 @@ int main(){
             break;
         }
 
+        //input
         switch (snake.input){
             case 'a':
-                if(snake.x > 2){
-                    snake.x --;
+                if(snake.p[0].x > 2){
+                    snake.p[0].x --;
                 }
                 break;
 
             case 's':
-                if (snake.y < gboard.nr_y + 1){
-                    snake.y++;
+                if (snake.p[0].y < gboard.nr_y + 1){
+                    snake.p[0].y++;
                 }
                 break;
 
             case 'd':
-                if (snake.x < gboard.nr_x){
-                    snake.x++;
+                if (snake.p[0].x < gboard.nr_x){
+                    snake.p[0].x++;
                 }
                 break;
             case 'w':
-                if (snake.y > 1){
-                    snake.y --;
+                if (snake.p[0].y > 1){
+                    snake.p[0].y --;
                 }
                 break;
         }
-        mvaddch(snake.y, snake.x, '0');
+
+
+        //sterge coada + inaintare cap
+        mvaddch(snake.last_y, snake.last_x, ' ');
+        mvaddch(snake.p[0].y, snake.p[0].x, '0');
+
         refresh();
 
     }
