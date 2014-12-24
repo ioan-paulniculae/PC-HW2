@@ -508,12 +508,14 @@ int main () {
     cbreak ();
 
     
-    PUNCT gboard;
-    PUNCT food;
+    PUNCT *gboard;
+    PUNCT *food;
+
+    gboard = (PUNCT *) malloc (sizeof(PUNCT));
+    food = (PUNCT *) malloc (sizeof(PUNCT));
     
-    SNAKE snake;
-    SNAKE *snak;
-    snak = &snake;
+    SNAKE *snake;
+    snake = (SNAKE *) malloc (sizeof(SNAKE));
 
     unsigned hungry = 1;		//1= daca nu e mancare pe tabla
 
@@ -545,50 +547,52 @@ int main () {
 
             case 2:                 //utilizatorul doreste sa joace
 
-                init_game (snak, &gboard);
+                init_game (snake, gboard);
                 
-                snake.dim = 10; //dimensiunea initiala a sarpelui. TO DO: select from options
+                snake->dim = 10; //dimensiunea initiala a sarpelui. TO DO: select from options
 
                 //TO DO: SNAKE SPEED FROM OPTIONS
-                snake.speed = 550;
+                snake->speed = 550;
 
-                snake.lastinput = 'd'; //sarpele se va misca initial spre dreapta
+                snake->lastinput = 'd'; //sarpele se va misca initial spre dreapta
 
                 while (NO_STOP) {   //incepe jocul
 
-                    updatesnake(snak);                //actualizarea coordonatelor
+                    updatesnake(snake);                //actualizarea coordonatelor
 
-                    timeout (UNITY - snake.speed);  //viteza de miscare
+                    timeout (UNITY - snake->speed);  //viteza de miscare
 
-                    foodGen(&hungry, &gboard, snak, &food); //generam mancarea
+                    foodGen(&hungry, gboard, snake, food); //generam mancarea
 
-                    readInput(snak);             //citim urmatoarea miscare
+                    readInput(snake);             //citim urmatoarea miscare
 
-                    correctInput(snak);          //verificam de erori
+                    correctInput(snake);          //verificam de erori
 
-                    if (isTimeToEnd(snak)){         //inchidem daca trebuie
+                    if (isTimeToEnd(snake)){         //inchidem daca trebuie
                         
                         break;
                     }
 
-                    positionSnake(snak);            //in urma inputului, repozitionam sarpele
+                    positionSnake(snake);            //in urma inputului, repozitionam sarpele
 
-                    if (gameIsLost(snak, &gboard)){     //daca s-a terminat jocul
+                    if (gameIsLost(snake, gboard)){     //daca s-a terminat jocul
                         
-                        mvaddstr (10, gboard.x / 3, "GAME OVER");
+                        clear();
+                        mvaddstr (10, gboard->x / 3, "GAME OVER");
                         timeout (-1);
                         getch ();
+                        
                         break;
                     }
 
-                    if (hasEaten(snak, &food)){
+                    if (hasEaten(snake, food)){
 
-                        makeSnakeFatAndFurious(snak, &hungry, &speed_augment);
+                        makeSnakeFatAndFurious(snake, &hungry, &speed_augment);
                     }
 
-                    refreshSnake(snak);
+                    refreshSnake(snake);
 
-                    paintSnake(snak, hungry);
+                    paintSnake(snake, hungry);
 
                     refresh ();
 
