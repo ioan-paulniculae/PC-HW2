@@ -28,12 +28,6 @@ typedef struct {
     char lastinput;
 } SNAKE;
 
-typedef struct {
-
-    unsigned nr_x;		//numarul de coloane
-    unsigned nr_y;		//numarul de linii
-} BOARD;
-
 void init_window () {
 
   //initializare
@@ -71,6 +65,8 @@ unsigned main_menu () {
     p.x = 30;
     p.y = 12;
 
+    clear ();
+    
     attron (A_UNDERLINE | A_BOLD);
         
         mvaddstr (p.y - 2, p.x, "NEW GAME");
@@ -88,8 +84,7 @@ unsigned main_menu () {
         c = tolower (c);
 
         if (c == 'q') {
-         
-         break;
+            return 0;
         }
 
         switch (c) {
@@ -193,7 +188,7 @@ void options () {
 }
 
 //functie care creaza un chenar de dim_x * dim_y
-void create_gameboard (int dim_x, int dim_y) {
+void create_gameboard (unsigned dim_x, unsigned dim_y) {
 
     int i;
 
@@ -236,6 +231,29 @@ void create_gameboard (int dim_x, int dim_y) {
     }
 }
 
+void init_game (SNAKE *snake, PUNCT *gboard){
+
+    getmaxyx (stdscr, gboard->y, gboard->x); //aflam dimensiunile maxime ale tablei de joc
+
+    gboard->x--;      //din motive de aspect, folosim un chenar un pic mai mic
+    gboard->y--;
+
+    //delimitam un chenar de x * y, in care se va desfasura jocul
+    create_gameboard (gboard->x, gboard->y);
+
+                
+    gboard->x -= 2;   //dimensiunile efective ale tablei de joc, dupa chenar
+    gboard->y -= 2;
+
+    //in conditii ideale sarpele poate ajunge sa ocupe toata tabla
+    snake->p = (PUNCT *) malloc (gboard->x * gboard->y * sizeof (PUNCT));
+     
+    snake->p[HEAD].x = gboard->x / 3;  //intializam coordonatele capului sarpelui
+    snake->p[HEAD].y = gboard->y / 3;
+     
+    mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');    //adaugam pe tabla sarpele
+}
+
 void updatesnake (SNAKE *snake){
     
     unsigned i;
@@ -251,7 +269,7 @@ void updatesnake (SNAKE *snake){
 }
 
 //generatorul de mancare
-void foodGen (unsigned *hungry, BOARD *gboard, SNAKE *snake, PUNCT *food){
+void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food){
 
     unsigned fooderr;
     unsigned i;
@@ -261,8 +279,8 @@ void foodGen (unsigned *hungry, BOARD *gboard, SNAKE *snake, PUNCT *food){
         *hungry = 0;
         srand (time (NULL));
 
-        food->x = rand () % gboard->nr_x;
-        food->y = rand () % gboard->nr_y;
+        food->x = rand () % gboard->x;
+        food->y = rand () % gboard->y;
 
         //fix: daca e pe margine, sa o puna langa.
         //nu sa genereze iar
@@ -287,7 +305,7 @@ void foodGen (unsigned *hungry, BOARD *gboard, SNAKE *snake, PUNCT *food){
                     //o mutam
                     food->x++;
 
-                    if (food->x >= gboard->nr_x - 1) {
+                    if (food->x >= gboard->x - 1) {
 
                         food->x = food->y;
                     }
@@ -410,7 +428,7 @@ void positionSnake(SNAKE *snake){
     }
 }
 
-unsigned gameIsLost(SNAKE *snake, BOARD *gboard){
+unsigned gameIsLost(SNAKE *snake, PUNCT *gboard){
 
     unsigned i;
 
@@ -419,7 +437,7 @@ unsigned gameIsLost(SNAKE *snake, BOARD *gboard){
         return 1;
     }
 
-    if (snake->p[HEAD].x >= gboard->nr_x) {
+    if (snake->p[HEAD].x >= gboard->x) {
 
         return 1;
     }
@@ -429,7 +447,7 @@ unsigned gameIsLost(SNAKE *snake, BOARD *gboard){
         return 1;
     }
 
-    if (snake->p[HEAD].y >= gboard->nr_y + 1){
+    if (snake->p[HEAD].y >= gboard->y + 1){
         return 1;
     }
 
@@ -489,24 +507,21 @@ int main () {
     //nobuffering
     cbreak ();
 
-    WINDOW *wnd = initscr ();
-    BOARD gboard;
+    
+    PUNCT gboard;
     PUNCT food;
     
     SNAKE snake;
     SNAKE *snak;
     snak = &snake;
 
-    unsigned over = 0;		    //daca ajunge 1, game over
-    unsigned quit = 0;		    //daca ajunge 1, trebuie iesit
     unsigned hungry = 1;		//1= daca nu e mancare pe tabla
 
-    unsigned i;
     unsigned speed_augment = 0;    //coeficient care influenteaza viteza
 
     unsigned op;                 //2 - game, 1- options 0 - quit
 
-    
+    initscr();
     init_window ();
 
 
@@ -530,26 +545,8 @@ int main () {
 
             case 2:                 //utilizatorul doreste sa joace
 
-                getmaxyx (wnd, gboard.nr_y, gboard.nr_x); //aflam dimensiunile maxime ale tablei de joc
-
-                gboard.nr_x--;      //din motive de aspect, folosim un chenar un pic mai mic
-                gboard.nr_y--;
-
-                //delimitam un chenar de nr_x * nr_y, in care se va desfasura jocul
-                create_gameboard (gboard.nr_x, gboard.nr_y);
-
+                init_game (snak, &gboard);
                 
-                gboard.nr_x -= 2;   //dimensiunile efective ale tablei de joc, dupa chenar
-                gboard.nr_y -= 2;
-
-                //in conditii ideale sarpele poate ajunge sa ocupe toata tabla
-                snake.p = (PUNCT *) malloc (gboard.nr_x * gboard.nr_y * sizeof (PUNCT));
-     
-                snake.p[HEAD].x = gboard.nr_x / 3;  //intializam coordonatele capului sarpelui
-                snake.p[HEAD].y = gboard.nr_y / 3;
-     
-                mvaddch (snake.p[HEAD].y, snake.p[HEAD].x, 'O');    //adaugam pe tabla sarpele
-            
                 snake.dim = 10; //dimensiunea initiala a sarpelui. TO DO: select from options
 
                 //TO DO: SNAKE SPEED FROM OPTIONS
@@ -578,7 +575,7 @@ int main () {
 
                     if (gameIsLost(snak, &gboard)){     //daca s-a terminat jocul
                         
-                        mvaddstr (10, gboard.nr_x / 3, "GAME OVER");
+                        mvaddstr (10, gboard.x / 3, "GAME OVER");
                         timeout (-1);
                         getch ();
                         break;
