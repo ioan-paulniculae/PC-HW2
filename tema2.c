@@ -66,7 +66,7 @@ unsigned main_menu () {
     p.y = 12;
 
     clear ();
-    
+
     attron (A_UNDERLINE | A_BOLD);
         
         mvaddstr (p.y - 2, p.x, "NEW GAME");
@@ -300,19 +300,19 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food){
             for (i = 0; i < snake->dim; i++) {
 
                 //daca s-a generat mancare peste sarpe
-                if (food->x == snake->p[i].x && food->y == snake->p[i].y) {
+                if (food->x == snake->p[i].x) { 
+                    if (food->y == snake->p[i].y) {
 
-                    //o mutam
-                    food->x++;
+                            srand (time (NULL));
 
-                    if (food->x >= gboard->x - 1) {
+                            food->x = rand () % gboard->x;
+                            food->y = rand () % gboard->y;
 
-                        food->x = food->y;
+                            fooderr = 1;
+                            
+                            break;
                     }
-
-                    fooderr = 1;
-                   break;
-               }
+                }
            }
        }while (fooderr);
 
