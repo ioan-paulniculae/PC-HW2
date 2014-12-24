@@ -7,6 +7,8 @@
 #define NO_STOP 1
 #define HEAD 0
 #define UNITY 1000
+#define Y 11
+#define X 12
 
 typedef struct {
   
@@ -23,6 +25,8 @@ typedef struct {
 
     unsigned dim;
     unsigned speed;
+
+    unsigned level; // 1 - easy 5 - insane
 
     char input;
     char lastinput;
@@ -82,10 +86,6 @@ unsigned main_menu () {
 
         c = getch ();
         c = tolower (c);
-
-        if (c == 'q') {
-            return 0;
-        }
 
         switch (c) {
             case 'w':
@@ -177,14 +177,548 @@ unsigned main_menu () {
     return 1;
 }
 
-void options () {
+
+//functie care permite utilizatorului sa aleaga nivelul de 
+//dificultate si dimensiunea initiala
+void customise (SNAKE *snake) {
+
+    char input;
+    PUNCT coord;
+
+    coord.x = X;
+    coord.y = Y;
 
     clear ();
 
-    mvaddstr (10, 10, "DIFFICULTY:");
-    mvaddstr (11, 10, "INITIAL SIZE:");
+    attron(A_UNDERLINE);
+    
+        mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+    attroff(A_UNDERLINE);
 
-    getch ();
+    mvaddch (Y, X, '1');
+    mvaddch (Y, X + 2, '2');
+    mvaddch (Y, X + 4, '3');
+    mvaddch (Y, X + 6, '4');
+    mvaddch (Y, X + 8, '5');
+    
+    attron(A_UNDERLINE);
+        
+        mvprintw (Y + 1, X - 2, "INITIAL SIZE: %d", snake->dim);
+    attroff(A_UNDERLINE);
+
+    mvaddch (Y + 2, X, '1');
+    mvaddch (Y + 2, X + 2, '2');
+    mvaddch (Y + 2, X + 4, '3');
+    mvaddch (Y + 2, X + 6, '5');
+    mvaddch (Y + 2, X + 8, '7');
+
+    attron(A_UNDERLINE);
+        
+        mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+    attroff(A_UNDERLINE);
+
+    while (NO_STOP) {
+
+        input = getch();
+        input = tolower (input);
+        
+        switch (input){
+
+            case 'w':
+
+                switch(coord.y){
+
+                    case Y:
+                    break;
+
+                    case Y + 2:
+
+                        coord.y -= 2;
+                    break;
+
+                    case X + 2:
+
+                        coord.y -= 1;
+
+                    break;
+                }
+            break;
+
+            case 'a':
+
+                if (coord.x != X){
+                    coord.x -= 2;
+                }
+            break;
+
+            case 's':
+
+                switch(coord.y){
+
+                    case Y:
+
+                        coord.y += 2;
+                    break;
+
+                    case Y + 2:
+
+                        coord.y += 1;
+                    break;
+
+                    case X + 2:
+                    break;
+                }
+            break;
+
+            case 'd':
+
+                if (coord.x != X + 8){
+                    coord.x += 2;
+                }
+            break;
+
+            case '\n':
+            break;   
+        }
+
+        switch (coord. y){
+
+            case Y:
+
+                switch (coord.x){
+
+                    case X:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        attron(A_STANDOUT);
+                            mvaddch (Y, X, '1');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+                            snake->level = 1;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 2:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        attron(A_STANDOUT);
+                            mvaddch (Y, X + 2, '2');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+                            snake->level = 2;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 4:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        attron(A_STANDOUT);
+                            mvaddch (Y, X + 4, '3');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+                            snake->level = 3;
+                        }
+
+                        refresh();               
+                    break;
+
+                    case X + 6:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        attron(A_STANDOUT);
+                            mvaddch (Y, X + 6, '4');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE); 
+
+                        if (input == '\n'){
+                            snake->level = 4;
+                        }
+
+                        refresh();                   
+                    break;
+
+                    case X + 8:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        attron(A_STANDOUT);
+                            mvaddch (Y, X + 8, '5');
+                        attroff(A_STANDOUT);
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+                            snake->level = 5;
+                        }
+
+                        refresh();
+                    break;
+                }
+            break;
+
+            case Y + 2:
+
+                switch (coord.x){
+
+                    case X:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        attron(A_STANDOUT);
+                            mvaddch (Y + 2, X, '1');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+
+                            snake->dim = 1;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 2:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        attron(A_STANDOUT);
+                            mvaddch (Y + 2, X + 2, '2');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+
+                            snake->dim = 2;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 4:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        attron(A_STANDOUT);
+                            mvaddch (Y + 2, X + 4, '3');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+
+                            snake->dim = 3;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 6:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        attron(A_STANDOUT);
+                            mvaddch (Y + 2, X + 6, '5');
+                        attroff(A_STANDOUT);
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+
+                            snake->dim = 5;
+                        }
+
+                        refresh();
+                    break;
+
+                    case X + 8:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        attron(A_STANDOUT);
+                            mvaddch (Y + 2, X + 8, '7');
+                        attroff(A_STANDOUT);
+
+                        attron(A_UNDERLINE);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE);
+
+                        if (input == '\n'){
+
+                            snake->dim = 7;
+                        }
+
+                        refresh();
+                    break;
+                }
+            break;
+
+            case X + 2:
+
+                        attron(A_UNDERLINE);
+    
+                            mvprintw (Y - 1, X - 2, "DIFFICULTY: %d", snake->level);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y, X, '1');
+                        mvaddch (Y, X + 2, '2');
+                        mvaddch (Y, X + 4, '3');
+                        mvaddch (Y, X + 6, '4');
+                        mvaddch (Y, X + 8, '5');
+    
+                        attron(A_UNDERLINE);
+        
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                        attroff(A_UNDERLINE);
+
+                        mvaddch (Y + 2, X, '1');
+                        mvaddch (Y + 2, X + 2, '2');
+                        mvaddch (Y + 2, X + 4, '3');
+                        mvaddch (Y + 2, X + 6, '5');
+                        mvaddch (Y + 2, X + 8, '7');
+
+                        attron(A_UNDERLINE | A_STANDOUT);
+        
+                            mvprintw(Y + 3, X - 2, "RETURN TO MAIN MENU");
+                        attroff(A_UNDERLINE | A_STANDOUT);
+
+                        if (input == '\n'){
+
+                            return;
+                        }
+            break;
+        }
+
+        refresh();
+
+    }
 }
 
 //functie care creaza un chenar de dim_x * dim_y
@@ -526,7 +1060,8 @@ int main () {
     initscr();
     init_window ();
 
-
+    snake->dim = 1;
+    snake->level = 1;
 
     while (NO_STOP){
 
@@ -542,18 +1077,13 @@ int main () {
 
             case 1:                 //utilizatorul doreste sa vada optiunile
 
-                options();
+                customise(snake);
             break;
 
             case 2:                 //utilizatorul doreste sa joace
 
                 init_game (snake, gboard);
                 
-                snake->dim = 10; //dimensiunea initiala a sarpelui. TO DO: select from options
-
-                //TO DO: SNAKE SPEED FROM OPTIONS
-                snake->speed = 550;
-
                 snake->lastinput = 'd'; //sarpele se va misca initial spre dreapta
 
                 while (NO_STOP) {   //incepe jocul
@@ -604,5 +1134,5 @@ int main () {
 
     //inchidere
     endwin ();
-    return 0;
+    exit(1);
 }
