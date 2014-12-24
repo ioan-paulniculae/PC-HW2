@@ -243,15 +243,21 @@ int main(){
     mvaddch(snake.p[HEAD].y, snake.p[HEAD].x, 'O');
 
     //dimensiune initiala
-    snake.dim = 1;
+    snake.dim = 10;
 
     //viteza initiala
-    snake.speed = 8 * (gboard.nr_x + gboard.nr_y);
+    snake.speed = 4 * (gboard.nr_x + gboard.nr_y);
+
+    if (snake.speed >= 1000){
+        snake.speed = 550;
+    }
 
     snake.lastinput = 'd';
 
     while (NO_STOP){
 
+        
+        
         if (op != 2){
             endwin();
             exit(1);
@@ -340,6 +346,7 @@ int main(){
 
         //daca s-a introdus ceva corect
         if (snake.input != ERR && !mverr){
+            
             snake.lastinput = snake.input;
         }
 
@@ -468,13 +475,13 @@ int main(){
             //creste viteza
             if (!snake.dim % 2){
                 if (snake.dim < 5){
-                    speed_augment += 10;
+                    speed_augment = 30;
                 }
                 if (snake.dim >= 5 && snake.dim < 20){
-                    speed_augment += 8;
+                    speed_augment = 20;
                 }
                 if (snake.dim >= 20){
-                    speed_augment += 4;
+                    speed_augment = 10;
                 }
                 if (snake.speed + speed_augment >= 1000){
                     snake.speed += 2;
