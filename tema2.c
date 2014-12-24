@@ -25,10 +25,11 @@ typedef struct {
 
     unsigned dim;
     unsigned size;
+
     unsigned speed;
+    unsigned topspeed; //in functie de level
 
     unsigned level; // 1 - easy 5 - insane
-
     char input;
     char lastinput;
 } SNAKE;
@@ -794,6 +795,40 @@ void init_snake(SNAKE *snake, unsigned *hungry){
     *hungry = 1;
     snake->lastinput = 'd';
     snake->dim = snake->size;
+
+    //setari in functie de nivel
+    switch(snake->level){
+
+        case 1:
+
+            snake->speed = 600;
+            snake->topspeed = 750;
+        break;
+
+        case 2:
+
+            snake->speed = 630;
+            snake->topspeed = 800;
+        break;
+
+        case 3:
+
+            snake->speed = 630;
+            snake->topspeed = 850;
+        break;
+
+        case 4:
+
+            snake->speed = 640;
+            snake->topspeed = 900;
+        break;
+
+        case 5:
+
+            snake->speed = 650;
+            snake->topspeed = 970;
+        break;
+    }
 }
 
 void updatesnake (SNAKE *snake){
@@ -1064,6 +1099,7 @@ void adjustSpeed(SNAKE *snake, PUNCT *gboard){
         }
     }
 }
+
 int main () {
     
     //nobuffering
@@ -1082,13 +1118,13 @@ int main () {
     unsigned hungry;		//1 = daca nu e mancare pe tabla
 
     snake->size = 1;
+    snake->level = 1;
 
     unsigned op;                 //2 - game, 1- options 0 - quit
 
     initscr();
     init_window ();
 
-    snake->speed = 630;
 
     while (NO_STOP){
 
