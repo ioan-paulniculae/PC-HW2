@@ -1006,7 +1006,7 @@ void positionSnake(SNAKE *snake){
     }
 }
 
-unsigned gameIsLost(SNAKE *snake, PUNCT *gboard){
+unsigned gameIsLost(SNAKE *snake, PUNCT *gboard) {
 
     unsigned i;
 
@@ -1040,7 +1040,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard){
     return 0;
 }
 
-unsigned hasEaten (SNAKE *snake, PUNCT *food){
+unsigned hasEaten (SNAKE *snake, PUNCT *food) {
 
     if (snake->p[HEAD].x == food->x){
         if (snake->p[HEAD].y == food->y){
@@ -1051,11 +1051,113 @@ unsigned hasEaten (SNAKE *snake, PUNCT *food){
 
     return 0;
 }
+void snakeAccelerate (SNAKE * snake){
+
+    switch (snake->level){
+
+        case 1:
+
+            if (snake->dim <= 4) {
+                
+                snake->speed += 10;
+            }
+            else{
+
+                if (snake->dim <= 26){
+
+                    snake->speed += 5;
+                }
+            }
+        break;
+
+        case 2:
+
+            if (snake->dim <= 15){
+
+                snake->speed += 2;
+            }
+            else{
+
+                if (snake->dim <= 20){
+
+                    snake->speed += 8;
+                }
+                else{
+
+                    if (snake->dim <= 25){
+
+                        snake->speed += 20;
+                    }
+                }
+            }
+
+        break;
+
+        case 3:
+
+            if (snake->dim <= 25){
+
+                snake->speed += 9;
+            }
+        break;
+
+        case 4:
+
+            if (snake->dim <= 5){
+
+                snake->speed += 12;
+            }
+            else{
+
+                if(snake->dim <= 10){
+
+                    snake->speed += 20;
+                }
+                else{
+
+                    if (snake->dim <= 24){
+
+                        snake->speed += 3;
+                    }
+                    else{
+
+                        if (snake->dim == 25){
+
+                            snake->speed += 8;
+                        }
+                    }
+                }
+            }
+        break;
+
+        case 5:
+
+            if (snake->dim <= 10){
+
+                snake->speed += 15;
+            }
+            else{
+
+                if (snake->dim <= 15){
+
+                    snake->speed += 20;
+                }
+                else{
+
+                    if (snake->dim <= 17){
+
+                        snake->speed += 35;
+                    }
+                }
+            }
+        break;
+    }
+}
 
 void makeSnakeFatAndFurious(SNAKE *snake, unsigned * hungry){
 
     *hungry = 1;
-
+    snakeAccelerate(snake);
     snake->dim++;
 }
 
@@ -1098,6 +1200,14 @@ void adjustSpeed(SNAKE *snake, PUNCT *gboard){
 
         }
     }
+}
+
+void printLoosersMSG(PUNCT *gboard){
+
+    clear();
+    mvaddstr (10, gboard->x / 3, "GAME OVER");
+    timeout (-1);
+    getch ();
 }
 
 int main () {
@@ -1159,7 +1269,7 @@ int main () {
 
                     readInput (snake);             //citim urmatoarea miscare
 
-                    adjustSpeed (snake, gboard);
+                    adjustSpeed (snake, gboard);    //cand se trece dupa o axa pe alta
 
                     correctInput (snake);          //verificam de erori
 
@@ -1174,23 +1284,22 @@ int main () {
 
                     if (gameIsLost(snake, gboard)){     //daca s-a terminat jocul
                         
-                        clear();
-                        mvaddstr (10, gboard->x / 3, "GAME OVER");
-                        timeout (-1);
-                        getch ();
-                        
+                        printLoosersMSG (gboard);
                         break;
                     }
 
                     if (hasEaten(snake, food)){
 
+                        //creste in dimensiune si devine mai rapid
                         makeSnakeFatAndFurious(snake, &hungry);
                     }
 
-                    refreshSnake(snake);
+                    refreshSnake(snake);    //actualizeaza finalul sarpelui(daca a mancat, s-a marit)    
 
-                    paintSnake(snake, hungry);
+                    paintSnake(snake, hungry);  //inainteaza capul o pozitie, si se sterge coada
 
+
+                    mvprintw(0, 0, "dim:%d, speed: %d, level:%d", snake->dim, snake->speed, snake->level);
                     refresh ();
 
                 }
