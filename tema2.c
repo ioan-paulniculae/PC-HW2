@@ -1008,7 +1008,7 @@ unsigned hasEaten (SNAKE *snake, PUNCT *food){
     return 0;
 }
 
-void makeSnakeFatAndFurious(SNAKE *snake, unsigned * hungry, unsigned * speed_augment){
+void makeSnakeFatAndFurious(SNAKE *snake, unsigned * hungry){
 
     *hungry = 1;
 
@@ -1036,6 +1036,25 @@ void paintSnake(SNAKE *snake, unsigned hungry){
     mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
 }
 
+void adjustSpeed(SNAKE *snake, PUNCT *gboard){
+
+    if (snake->input == 'w' || snake->input == 's'){
+
+        if (snake->lastinput == 'a' || snake->lastinput == 'd'){
+
+            snake->speed -= 17 * gboard->y / 24;
+        
+        }
+    }
+
+    if (snake->input == 'a' || snake->input == 'd'){
+        if (snake->lastinput =='w' || snake->lastinput =='s'){
+
+            snake->speed += 17 * gboard->y / 24; 
+
+        }
+    }
+}
 int main () {
     
     //nobuffering
@@ -1053,7 +1072,7 @@ int main () {
 
     unsigned hungry = 1;		//1= daca nu e mancare pe tabla
 
-    unsigned speed_augment = 0;    //coeficient care influenteaza viteza
+
 
     unsigned op;                 //2 - game, 1- options 0 - quit
 
@@ -1062,6 +1081,8 @@ int main () {
 
     snake->dim = 1;
     snake->level = 1;
+
+    snake->speed = 950;
 
     while (NO_STOP){
 
@@ -1096,6 +1117,8 @@ int main () {
 
                     readInput(snake);             //citim urmatoarea miscare
 
+                    adjustSpeed(snake, gboard);
+
                     correctInput(snake);          //verificam de erori
 
                     if (isTimeToEnd(snake)){         //inchidem daca trebuie
@@ -1104,6 +1127,8 @@ int main () {
                     }
 
                     positionSnake(snake);            //in urma inputului, repozitionam sarpele
+
+                    
 
                     if (gameIsLost(snake, gboard)){     //daca s-a terminat jocul
                         
@@ -1117,7 +1142,7 @@ int main () {
 
                     if (hasEaten(snake, food)){
 
-                        makeSnakeFatAndFurious(snake, &hungry, &speed_augment);
+                        makeSnakeFatAndFurious(snake, &hungry);
                     }
 
                     refreshSnake(snake);
