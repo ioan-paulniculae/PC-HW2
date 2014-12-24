@@ -9,9 +9,10 @@
 #define UNITY 1000
 
 typedef struct {
+  
     unsigned x;
     unsigned y;
-}PUNCT;
+} PUNCT;
 
 typedef struct {
 
@@ -25,502 +26,582 @@ typedef struct {
 
     char input;
     char lastinput;
-
-}SNAKE;
+} SNAKE;
 
 typedef struct {
 
-    unsigned nr_x;  //numarul de coloane
-    unsigned nr_y;  //numarul de linii
+    unsigned nr_x;		//numarul de coloane
+    unsigned nr_y;		//numarul de linii
+} BOARD;
 
-}BOARD;
+void init_window () {
 
-void init_window(){
+  //initializare
+    raw ();
 
-    //initializare
-    raw();
+  //mesaj initial
+    attron (A_UNDERLINE | A_BOLD);
+       
+        mvprintw (0, 3, "SNAKE");
+        mvprintw (1, 1, "W - inainte");
+        mvprintw (2, 1, "A - stanga");
+        mvprintw (3, 1, "S - jos");
+        mvprintw (4, 1, "D - dreapta");
+    
+    attroff (A_UNDERLINE | A_BOLD);
 
-    //mesaj initial
-    attron(A_UNDERLINE | A_BOLD);
-        mvprintw(0, 3, "SNAKE");
-        mvprintw(1, 1, "W - inainte");
-        mvprintw(2, 1, "A - stanga");
-        mvprintw(3, 1, "S - jos");
-        mvprintw(4, 1, "D - dreapta");
-    attroff(A_UNDERLINE | A_BOLD);
+  //ascundere cursor
+    curs_set (0);
 
-    //ascundere cursor
-    curs_set(0);
-
-    //ascundem inputul
-    noecho();
-
-
-
-    mvprintw(10, 10, "Apasa orice tasta");
-    getch();
-    clear();
+  //ascundem inputul
+    noecho ();
 
 
+
+    mvprintw (10, 10, "Apasa orice tasta");
+    
+    getch ();
+    clear ();
 }
 
-
-unsigned main_menu(){
+unsigned main_menu () {
 
     PUNCT p;
 
     p.x = 30;
     p.y = 12;
 
-    attron(A_UNDERLINE | A_BOLD);
-    mvaddstr(p.y - 2, p.x, "NEW GAME");
-    attroff(A_UNDERLINE | A_BOLD);
-    mvaddstr(p.y - 1, p.x, "OPTIONS");
-    mvaddstr(p.y, p.x, "EXIT");
+    attron (A_UNDERLINE | A_BOLD);
+        
+        mvaddstr (p.y - 2, p.x, "NEW GAME");
+    
+    attroff (A_UNDERLINE | A_BOLD);
+
+    mvaddstr (p.y - 1, p.x, "OPTIONS");
+    mvaddstr (p.y, p.x, "EXIT");
 
     char c;
 
-    while(NO_STOP){
+    while (NO_STOP) {
 
-        c = getch();
-        c = tolower(c);
+        c = getch ();
+        c = tolower (c);
 
-        if (c == 'q'){
-            break;
+        if (c == 'q') {
+         
+         break;
         }
 
-        switch (c){
+        switch (c) {
             case 'w':
-                if (p.y < 12){
+        
+                if (p.y < 12) {
+               
                     p.y++;
                 }
-                break;
+
+            break;
 
             case 's':
 
-                if (p.y > 10){
+                if (p.y > 10) {
+                
                     p.y--;
                 }
-                break;
+
+            break;
 
             case '\n':
-                clear();
+           
+                clear ();
                 return p.y - 10;
-                break;
-            default:
-                break;
+        
+            break;
 
+            default:
+            break;
         }
 
+        switch (p.y) {
 
-
-        switch (p.y){
             case 12:
-                clear();
-                attron(A_UNDERLINE | A_BOLD);
-                    mvaddstr(p.y - 2, p.x, "NEW GAME");
-                attroff(A_UNDERLINE | A_BOLD);
-                mvaddstr(p.y - 1, p.x, "OPTIONS");
-                mvaddstr(p.y, p.x, "EXIT");
-                break;
+               
+                clear ();
+                
+                attron (A_UNDERLINE | A_BOLD);
+                
+                    mvaddstr (p.y - 2, p.x, "NEW GAME");
+                
+                attroff (A_UNDERLINE | A_BOLD);
+
+                mvaddstr (p.y - 1, p.x, "OPTIONS");
+                mvaddstr (p.y, p.x, "EXIT");
+
+            break;
 
             case 11:
-                clear();
-                mvaddstr(p.y - 1, p.x, "NEW GAME");
-                attron(A_UNDERLINE | A_BOLD);
-                    mvaddstr(p.y, p.x, "OPTIONS");
-                attroff(A_UNDERLINE | A_BOLD);
-                mvaddstr(p.y + 1, p.x, "EXIT");
-                break;
+                
+                clear ();
+                
+                mvaddstr (p.y - 1, p.x, "NEW GAME");
+
+                attron (A_UNDERLINE | A_BOLD);
+                
+                    mvaddstr (p.y, p.x, "OPTIONS");
+                
+                attroff (A_UNDERLINE | A_BOLD);
+
+                mvaddstr (p.y + 1, p.x, "EXIT");
+
+            break;
 
             case 10:
-                clear();
-                mvaddstr(p.y , p.x, "NEW GAME");
-                mvaddstr(p.y + 1, p.x, "OPTIONS");
-                attron(A_UNDERLINE | A_BOLD);
-                    mvaddstr(p.y + 2, p.x, "EXIT");
-                attroff(A_UNDERLINE | A_BOLD);
-                break;
+
+                clear ();
+
+                mvaddstr (p.y, p.x, "NEW GAME");
+                mvaddstr (p.y + 1, p.x, "OPTIONS");
+
+                attron (A_UNDERLINE | A_BOLD);
+
+                    mvaddstr (p.y + 2, p.x, "EXIT");
+                
+                attroff (A_UNDERLINE | A_BOLD);
+   
+            break;
 
             default:
-                break;
+            break;
         }
-        refresh();
+
+        refresh ();
     }
 
-    clear();
+    clear ();
+
     return 1;
 }
 
+void options () {
 
-//functie care creaza un
-//chenar de dim_x * dim_y
+    clear ();
 
-void create_gameboard(int dim_x, int dim_y){
+    mvaddstr (10, 10, "DIFFICULTY:");
+    mvaddstr (11, 10, "INITIAL SIZE:");
+
+    getch ();
+}
+
+//functie care creaza un chenar de dim_x * dim_y
+void create_gameboard (int dim_x, int dim_y) {
+
     int i;
 
-    //sus, orizontal
-    for (i = 1; i < dim_x + 1; i ++){
-        if (i % 2){
-            mvaddch(SPATIERE, i, '#');
-        }else{
-            mvaddch(SPATIERE, i, ' ');
+    //sus
+    for (i = 1; i < dim_x + 1; i++) {
+      
+        if (i % 2) {
+         
+            mvaddch (SPATIERE, i, '#');
+        }
+        else {
+         
+            mvaddch (SPATIERE, i, ' ');
         }
     }
-
+    
     //dreapta
-    for (i = SPATIERE; i < dim_y + SPATIERE; i++){
-        mvaddch(i, dim_x, '#');
+    for (i = SPATIERE; i < dim_y; i++) {
+        
+        mvaddch (i, dim_x, '#');
     }
 
     //jos
-    for (i = 1; i < dim_x + 1; i++){
-        if (i % 2){
-            mvaddch(dim_y + SPATIERE, i, '#');
-        }else{
-            mvaddch(dim_y + SPATIERE, i, ' ');
+    for (i = 1; i < dim_x + 1; i++) {
+        
+        if (i % 2) {
+        
+            mvaddch (dim_y, i, '#');
+        }
+        else {
+
+            mvaddch (dim_y, i, ' ');
         }
     }
 
     //stanga
-    for (i = SPATIERE; i < dim_y + SPATIERE; i++){
-        mvaddch(i, 1, '#');
+    for (i = SPATIERE; i < dim_y; i++){
+
+        mvaddch (i, 1, '#');
     }
 }
 
-int main(){
-
-    //nobuffering
-    cbreak();
-
-    WINDOW *wnd = initscr();
-    BOARD gboard;
-    SNAKE snake;
-    PUNCT food;
-
-    unsigned over = 0;      //daca ajunge 1, game over
-    unsigned quit = 0;      //daca ajunge 1, trebuie iesit
-    unsigned hungry = 1;    //1= daca nu e mancare pe tabla
-
-    //erors
-    unsigned mverr = 0;     //daca ajunge 1, eroare de miscare
-    unsigned fooderr = 0;   //1 - daca eroare la generare mancare
-
+void updatesnake (SNAKE *snake){
+    
     unsigned i;
-    unsigned speed_augment = 0;
 
-    unsigned op;
+    for (i = snake->dim; i > 0; i--){
 
-    keypad(stdscr, TRUE);
-    init_window();
+         snake->p[i].x = snake->p[i - 1].x;
+         snake->p[i].y = snake->p[i - 1].y;
+     }
 
+    snake->last_x = snake->p[snake->dim].x;
+    snake->last_y = snake->p[snake->dim].y;
+}
 
-    op = main_menu();
+//generatorul de mancare
+void foodGen (unsigned *hungry, BOARD *gboard, SNAKE *snake, PUNCT *food){
 
+    unsigned fooderr;
+    unsigned i;
 
-    getmaxyx(wnd, gboard.nr_y, gboard.nr_x);
-    /*
-        folosim efectiv un chenar de dimenisuni mai mici
-        pentru aspect
-    */
+    if (*hungry) {
+        
+        *hungry = 0;
+        srand (time (NULL));
 
-    gboard.nr_x--;
-    gboard.nr_y--;
+        food->x = rand () % gboard->nr_x;
+        food->y = rand () % gboard->nr_y;
 
+        //fix: daca e pe margine, sa o puna langa.
+        //nu sa genereze iar
+        if (food->x <= 2) {
+        
+            food->x = 3;
+        }
 
-    create_gameboard(gboard.nr_x, gboard.nr_y);
+        if (food->y <= 2) {
+        
+            food->y = 3;
+        }
 
-    //din cauza chenarului
-    //dimensiunea efectiva s-a redus iar
-    gboard.nr_x -= 2;
-    gboard.nr_y -= 2;
+        do {
 
-    snake.p = (PUNCT *) malloc (gboard.nr_x * gboard.nr_y * sizeof (PUNCT));
+            fooderr = 0;
+            for (i = 0; i < snake->dim; i++) {
 
-    //pozitionare initiala
-    snake.p[HEAD].x = gboard.nr_x  / 3;
-    snake.p[HEAD].y = gboard.nr_y / 3 ;
-    mvaddch(snake.p[HEAD].y, snake.p[HEAD].x, 'O');
+                //daca s-a generat mancare peste sarpe
+                if (food->x == snake->p[i].x && food->y == snake->p[i].y) {
 
-    //dimensiune initiala
-    snake.dim = 10;
+                    //o mutam
+                    food->x++;
 
-    //viteza initiala
-    snake.speed = 4 * (gboard.nr_x + gboard.nr_y);
+                    if (food->x >= gboard->nr_x - 1) {
 
-    if (snake.speed >= 1000){
-        snake.speed = 550;
+                        food->x = food->y;
+                    }
+
+                    fooderr = 1;
+                   break;
+               }
+           }
+       }while (fooderr);
+
+       mvaddch (food->y, food->x, '*');
+   }
+}
+
+void readInput(SNAKE *snake){
+
+    snake->input = getch();
+    snake->input = tolower (snake->input);
+}
+
+void correctInput(SNAKE *snake){
+
+    unsigned mverr = FALSE;
+
+    if (snake->input == 'w' && snake->lastinput == 's') {
+
+        mverr = TRUE;
     }
 
-    snake.lastinput = 'd';
+    if (snake->input == 'a' && snake->lastinput == 'd') {
+        
+        mverr = TRUE;
+    }
+
+    if (snake->input == 's' && snake->lastinput == 'w') {
+
+        mverr = TRUE;
+    }
+
+    if (snake->input == 'd' && snake->lastinput == 'a') {
+
+        mverr = TRUE;
+    }
+
+
+      //daca s-a introdus ceva corect
+
+    if (snake->input != ERR && !mverr) {
+
+        snake->lastinput = snake->input;
+    }
+
+    //daca apar erori de miscare
+    if (mverr) {
+        
+        //sa se miste in aceeasi directie
+        snake->input = ERR;
+    }
+}
+
+unsigned isTimeToEnd(SNAKE *snake){
+
+    if (snake->input == 'q'){
+
+        return 1;
+    }
+
+    return 0;
+}
+
+void positionSnake(SNAKE *snake){
+
+    switch (snake->input) {
+        
+        case 'a':
+               
+            snake->p[HEAD].x--;
+        break;
+
+        case 's':
+
+            snake->p[HEAD].y++;
+        break;
+
+        case 'd':
+
+            snake->p[HEAD].x++;
+        break;
+
+        case 'w':
+        
+            snake->p[HEAD].y--;
+        break;
+
+        default:
+
+            switch (snake->lastinput) {
+
+                case 'a':
+                    
+                    snake->p[HEAD].x--;
+                break;
+
+                case 's':
+
+                    snake->p[HEAD].y++;
+                break;
+
+                case 'd':
+
+                    snake->p[HEAD].x++;
+                break;
+
+                case 'w':
+
+                    snake->p[HEAD].y--;
+                break;
+            }
+        break;
+    }
+}
+
+unsigned gameIsLost(SNAKE *snake, BOARD *gboard){
+
+    unsigned i;
+
+    if (snake->p[HEAD].x <= 2) {
+
+        return 1;
+    }
+
+    if (snake->p[HEAD].x >= gboard->nr_x) {
+
+        return 1;
+    }
+
+    if (snake->p[HEAD].y <= 1) {
+
+        return 1;
+    }
+
+    if (snake->p[HEAD].y >= gboard->nr_y + 1){
+        return 1;
+    }
+
+    for (i = 1; i < snake->dim; i++) {
+        if (snake->p[HEAD].x == snake->p[i].x) {
+            if (snake->p[HEAD].y == snake->p[i].y) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+unsigned hasEaten (SNAKE *snake, PUNCT *food){
+
+    if (snake->p[HEAD].x == food->x){
+        if (snake->p[HEAD].y == food->y){
+    
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void makeSnakeFatAndFurious(SNAKE *snake, unsigned * hungry, unsigned * speed_augment){
+
+    *hungry = 1;
+
+    snake->dim++;
+}
+
+void refreshSnake(SNAKE *snake){
+    
+    snake->p[snake->dim].x = snake->last_x;
+    snake->p[snake->dim].y = snake->last_y;
+}
+
+void paintSnake(SNAKE *snake, unsigned hungry){
+
+    if (!hungry) {
+ 
+        mvaddch (snake->last_y, snake->last_x, ' ');
+    }
+    else
+    {
+    
+        mvaddch (snake->last_y, snake->last_x, 'O');
+    }
+
+    mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
+}
+
+int main () {
+    
+    //nobuffering
+    cbreak ();
+
+    WINDOW *wnd = initscr ();
+    BOARD gboard;
+    PUNCT food;
+    
+    SNAKE snake;
+    SNAKE *snak;
+    snak = &snake;
+
+    unsigned over = 0;		    //daca ajunge 1, game over
+    unsigned quit = 0;		    //daca ajunge 1, trebuie iesit
+    unsigned hungry = 1;		//1= daca nu e mancare pe tabla
+
+    unsigned i;
+    unsigned speed_augment = 0;    //coeficient care influenteaza viteza
+
+    unsigned op;                 //2 - game, 1- options 0 - quit
+
+    
+    init_window ();
+
+
 
     while (NO_STOP){
 
-        
-        
-        if (op != 2){
-            endwin();
-            exit(1);
-        }
-        mverr = 0;
+        op = main_menu ();          // din main menu, utilizatorul alege optiunea
 
-        //actualizare coordonate
-        for (i = snake.dim; i > 0; i--){
-            snake.p[i].x = snake.p[i - 1].x;
-            snake.p[i].y = snake.p[i - 1].y;
-        }
+        switch (op){
 
-        snake.last_x = snake.p[snake.dim].x;
-        snake.last_y = snake.p[snake.dim].y;
+            case 0:                 //utilizatorul a ales sa iasa din joc
 
-        timeout(UNITY - snake.speed);
+                endwin();
+                exit(1);
+            break;
 
+            case 1:                 //utilizatorul doreste sa vada optiunile
 
-        //adaugare mancare
-        if(hungry){
+                options();
+            break;
 
-            hungry = 0;
-            srand(time(NULL));
+            case 2:                 //utilizatorul doreste sa joace
 
-            food.x = rand() % gboard.nr_x;
-            food.y = rand() % gboard.nr_y;
+                getmaxyx (wnd, gboard.nr_y, gboard.nr_x); //aflam dimensiunile maxime ale tablei de joc
 
-            if(food.x <= 2){
-                food.x = 3;
-            }
-            if (food.y <= 2){
-                food.y = 3;
-            }
+                gboard.nr_x--;      //din motive de aspect, folosim un chenar un pic mai mic
+                gboard.nr_y--;
 
-            do{
+                //delimitam un chenar de nr_x * nr_y, in care se va desfasura jocul
+                create_gameboard (gboard.nr_x, gboard.nr_y);
 
-                fooderr = 0;
-                for (i = 0; i < snake.dim; i++){
-                    if (food.x == snake.p[i].x
-                        && food.y == snake.p[i].y){
+                
+                gboard.nr_x -= 2;   //dimensiunile efective ale tablei de joc, dupa chenar
+                gboard.nr_y -= 2;
 
-                            food.x++;
-
-                            if (food.x >= gboard.nr_x - 1){
-                                food.x = food.y;
-                            }
-                            fooderr = 1;
-                            break;
-
-                    }
-                }
-            }while(fooderr);
-
-            mvaddch(food.y, food.x, '*');
-        }
-            snake.input = getch();
-            snake.input = tolower (snake.input);
-
-            /*
-            Prindere eroare:
-            daca sarpele merge spre stanga si utilizatorul
-            apasa dreapta
-            */
-        {
-
-            if (snake.input == 'w'
-                && snake.lastinput == 's'){
-                    mverr = 1;
-                }
-
-            if (snake.input == 'a'
-                && snake.lastinput == 'd'){
-                    mverr = 1;
-                }
-
-            if (snake.input == 's'
-                && snake.lastinput == 'w'){
-                    mverr = 1;
-                }
-
-            if (snake.input == 'd'
-                && snake.lastinput =='a'){
-                    mverr = 1;
-                }
-        }
-
-        //daca s-a introdus ceva corect
-        if (snake.input != ERR && !mverr){
+                //in conditii ideale sarpele poate ajunge sa ocupe toata tabla
+                snake.p = (PUNCT *) malloc (gboard.nr_x * gboard.nr_y * sizeof (PUNCT));
+     
+                snake.p[HEAD].x = gboard.nr_x / 3;  //intializam coordonatele capului sarpelui
+                snake.p[HEAD].y = gboard.nr_y / 3;
+     
+                mvaddch (snake.p[HEAD].y, snake.p[HEAD].x, 'O');    //adaugam pe tabla sarpele
             
-            snake.lastinput = snake.input;
-        }
+                snake.dim = 10; //dimensiunea initiala a sarpelui. TO DO: select from options
 
+                //TO DO: SNAKE SPEED FROM OPTIONS
+                snake.speed = 550;
 
+                snake.lastinput = 'd'; //sarpele se va misca initial spre dreapta
 
-        //daca apar erori de miscare
-        if (mverr){
+                while (NO_STOP) {   //incepe jocul
 
-            //sa se miste in aceeasi directie
-            snake.input = ERR;
-        }
+                    updatesnake(snak);                //actualizarea coordonatelor
 
+                    timeout (UNITY - snake.speed);  //viteza de miscare
 
-        if (snake.input == 'q'){
-            quit = 1;
-        }
+                    foodGen(&hungry, &gboard, snak, &food); //generam mancarea
 
-        if (quit){
+                    readInput(snak);             //citim urmatoarea miscare
+
+                    correctInput(snak);          //verificam de erori
+
+                    if (isTimeToEnd(snak)){         //inchidem daca trebuie
+                        
+                        break;
+                    }
+
+                    positionSnake(snak);            //in urma inputului, repozitionam sarpele
+
+                    if (gameIsLost(snak, &gboard)){     //daca s-a terminat jocul
+                        
+                        mvaddstr (10, gboard.nr_x / 3, "GAME OVER");
+                        timeout (-1);
+                        getch ();
+                        break;
+                    }
+
+                    if (hasEaten(snak, &food)){
+
+                        makeSnakeFatAndFurious(snak, &hungry, &speed_augment);
+                    }
+
+                    refreshSnake(snak);
+
+                    paintSnake(snak, hungry);
+
+                    refresh ();
+
+                }
             break;
         }
 
-
-
-
-        //input
-        switch (snake.input){
-            case 'a':
-                if(snake.p[HEAD].x > 2){
-                    snake.p[HEAD].x --;
-                }else{
-                    over = 1;
-
-                }
-            break;
-
-            case 's':
-                if (snake.p[HEAD].y < gboard.nr_y + 1){
-                    snake.p[HEAD].y++;
-                }else{
-                    over = 1;
-                }
-            break;
-
-            case 'd':
-                if (snake.p[0].x < gboard.nr_x){
-                    snake.p[0].x++;
-                }else{
-                    over = 1;
-                }
-                break;
-            case 'w':
-                if (snake.p[0].y > 1){
-                    snake.p[0].y --;
-                }else{
-                    over = 1;
-
-                }
-            break;
-
-            default:
-                switch (snake.lastinput){
-                    case 'a':
-                    if(snake.p[HEAD].x > 2){
-                        snake.p[HEAD].x --;
-                    }else{
-                        over = 1;
-
-                    }
-                    break;
-
-                    case 's':
-                    if (snake.p[HEAD].y < gboard.nr_y + 1){
-                        snake.p[HEAD].y++;
-                    }else{
-                        over = 1;
-                    }
-                    break;
-
-                    case 'd':
-                    if (snake.p[0].x < gboard.nr_x){
-                        snake.p[0].x++;
-                    }else{
-                        over = 1;
-                    }
-                    break;
-                    case 'w':
-                    if (snake.p[0].y > 1){
-                        snake.p[0].y --;
-                    }else{
-                        over = 1;
-
-                    }
-                    break;
-
-                }
-                break;
-
-            }
-
-    //verificare daca s-a lovit de el
-    for (i = 1; i < snake.dim; i ++){
-        if(snake.p[HEAD].x == snake.p[i].x &&
-            snake.p[HEAD].y == snake.p[i].y){
-                    over = 1;
-        }
     }
-
-
-    if (over){
-        mvaddstr(10, gboard.nr_x / 3, "GAME OVER");
-        timeout(-1);
-        snake.speed = 0;
-        getch();
-        break;
-    }
-
-    //a ajuns sa manance
-    if (snake.p[HEAD].x == food.x &&
-        snake.p[HEAD].y == food.y){
-
-            hungry = 1;
-
-            snake.dim++;
-
-            //daca mananca
-            //creste viteza
-            if (!snake.dim % 2){
-                if (snake.dim < 5){
-                    speed_augment = 30;
-                }
-                if (snake.dim >= 5 && snake.dim < 20){
-                    speed_augment = 20;
-                }
-                if (snake.dim >= 20){
-                    speed_augment = 10;
-                }
-                if (snake.speed + speed_augment >= 1000){
-                    snake.speed += 2;
-                }else{
-                    snake.speed += speed_augment;
-                }
-            }
-
-            if(snake.speed >= 1000){
-                snake.speed = 800;
-            }
-
-            snake.p[snake.dim].x = snake.last_x;
-            snake.p[snake.dim].y = snake.last_y;
-
-
-    }
-
-
-    //sterge coada + inaintare cap
-        if(! hungry){
-            mvaddch(snake.last_y, snake.last_x, ' ');
-        }else{
-            mvaddch(snake.last_y, snake.last_x, 'O');
-        }
-
-
-    mvaddch(snake.p[0].y, snake.p[0].x, 'O');
-
-
-    refresh();
-
-    }
-
-
-
 
     //inchidere
-    endwin();
-
+    endwin ();
     return 0;
 }
