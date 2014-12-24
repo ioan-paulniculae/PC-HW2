@@ -24,6 +24,7 @@ typedef struct {
     unsigned last_y;
 
     unsigned dim;
+    unsigned size;
     unsigned speed;
 
     unsigned level; // 1 - easy 5 - insane
@@ -203,7 +204,7 @@ void customise (SNAKE *snake) {
     
     attron(A_UNDERLINE);
         
-        mvprintw (Y + 1, X - 2, "INITIAL SIZE: %d", snake->dim);
+        mvprintw (Y + 1, X - 2, "INITIAL SIZE: %d", snake->size);
     attroff(A_UNDERLINE);
 
     mvaddch (Y + 2, X, '1');
@@ -304,7 +305,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -342,7 +343,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -380,7 +381,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -418,7 +419,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -456,7 +457,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -498,7 +499,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         attron(A_STANDOUT);
@@ -516,7 +517,7 @@ void customise (SNAKE *snake) {
 
                         if (input == '\n'){
 
-                            snake->dim = 1;
+                            snake->size = 1;
                         }
 
                         refresh();
@@ -537,7 +538,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -555,7 +556,7 @@ void customise (SNAKE *snake) {
 
                         if (input == '\n'){
 
-                            snake->dim = 2;
+                            snake->size = 2;
                         }
 
                         refresh();
@@ -576,7 +577,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -594,7 +595,7 @@ void customise (SNAKE *snake) {
 
                         if (input == '\n'){
 
-                            snake->dim = 3;
+                            snake->size = 3;
                         }
 
                         refresh();
@@ -615,7 +616,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -633,7 +634,7 @@ void customise (SNAKE *snake) {
 
                         if (input == '\n'){
 
-                            snake->dim = 5;
+                            snake->size = 5;
                         }
 
                         refresh();
@@ -654,7 +655,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -672,7 +673,7 @@ void customise (SNAKE *snake) {
 
                         if (input == '\n'){
 
-                            snake->dim = 7;
+                            snake->size = 7;
                         }
 
                         refresh();
@@ -695,7 +696,7 @@ void customise (SNAKE *snake) {
     
                         attron(A_UNDERLINE);
         
-                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->dim);
+                            mvprintw (X, X - 2, "INITIAL SIZE: %d", snake->size);
                         attroff(A_UNDERLINE);
 
                         mvaddch (Y + 2, X, '1');
@@ -788,6 +789,13 @@ void init_game (SNAKE *snake, PUNCT *gboard){
     mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');    //adaugam pe tabla sarpele
 }
 
+void init_snake(SNAKE *snake, unsigned *hungry){
+
+    *hungry = 1;
+    snake->lastinput = 'd';
+    snake->dim = snake->size;
+}
+
 void updatesnake (SNAKE *snake){
     
     unsigned i;
@@ -843,13 +851,14 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food){
                             food->y = rand () % gboard->y;
 
                             fooderr = 1;
+
+
                             
                             break;
                     }
                 }
            }
        }while (fooderr);
-
        mvaddch (food->y, food->x, '*');
    }
 }
@@ -1070,19 +1079,16 @@ int main () {
     SNAKE *snake;
     snake = (SNAKE *) malloc (sizeof(SNAKE));
 
-    unsigned hungry = 1;		//1= daca nu e mancare pe tabla
+    unsigned hungry;		//1 = daca nu e mancare pe tabla
 
-
+    snake->size = 1;
 
     unsigned op;                 //2 - game, 1- options 0 - quit
 
     initscr();
     init_window ();
 
-    snake->dim = 1;
-    snake->level = 1;
-
-    snake->speed = 950;
+    snake->speed = 630;
 
     while (NO_STOP){
 
@@ -1105,7 +1111,7 @@ int main () {
 
                 init_game (snake, gboard);
                 
-                snake->lastinput = 'd'; //sarpele se va misca initial spre dreapta
+                init_snake (snake, &hungry);
 
                 while (NO_STOP) {   //incepe jocul
 
@@ -1113,20 +1119,20 @@ int main () {
 
                     timeout (UNITY - snake->speed);  //viteza de miscare
 
-                    foodGen(&hungry, gboard, snake, food); //generam mancarea
+                    foodGen (&hungry, gboard, snake, food); //generam mancarea
 
-                    readInput(snake);             //citim urmatoarea miscare
+                    readInput (snake);             //citim urmatoarea miscare
 
-                    adjustSpeed(snake, gboard);
+                    adjustSpeed (snake, gboard);
 
-                    correctInput(snake);          //verificam de erori
+                    correctInput (snake);          //verificam de erori
 
-                    if (isTimeToEnd(snake)){         //inchidem daca trebuie
+                    if (isTimeToEnd (snake)){         //inchidem daca trebuie
                         
                         break;
                     }
 
-                    positionSnake(snake);            //in urma inputului, repozitionam sarpele
+                    positionSnake (snake);            //in urma inputului, repozitionam sarpele
 
                     
 
