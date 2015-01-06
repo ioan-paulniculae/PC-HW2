@@ -1023,7 +1023,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard, PUNCT *obst) {
         return 1;
     }
 
-    if (snake->p[HEAD].x >= gboard->x) {
+    if (snake->p[HEAD].x > gboard->x + 1) {
 
         return 1;
     }
@@ -1033,7 +1033,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard, PUNCT *obst) {
         return 1;
     }
 
-    if (snake->p[HEAD].y >= gboard->y + 1){
+    if (snake->p[HEAD].y > gboard->y + 1){
         return 1;
     }
 
@@ -1323,7 +1323,7 @@ int main () {
 
     snake->size = 1;
     snake->level = 1;
-    unsigned i;
+
     initscr();
     init_window ();
 
@@ -1349,7 +1349,12 @@ int main () {
                 //initializam tabla
                 init_game (snake, gboard);
                 
-                //initializam sarpele
+                /*
+                initializam sarpele:
+                    initial nu a mancat nimic
+                    se deplaseaza spre dreapta
+                    setam viteza initiala in functie de nivel
+                */
                 init_snake (snake, &hungry);
 
                 //realocam memorie in caz ca s-a modificat nivelul, deci si numarul de obstacole
@@ -1359,8 +1364,6 @@ int main () {
                 obstacleGen(obstacle, snake, gboard);
 
                 while (NO_STOP) {   //incepe jocul
-
-                    mvprintw(0, 0, "x:%d, y:%d", snake->p[HEAD].x, snake->p[HEAD].y);
 
                     updatesnake(snake);                //actualizarea coordonatelor
 
