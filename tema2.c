@@ -841,54 +841,62 @@ void updatesnake (SNAKE *snake){
 }
 
 //generatorul de mancare
-void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food){
+void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT *obst){
 
     unsigned fooderr;
     unsigned i;
 
     if (*hungry) {
         
-        *hungry = 0;
+        *hungry = FALSE;
         srand (time (NULL));
-
-        food->x = rand () % gboard->x;
-        food->y = rand () % gboard->y;
-
-        //fix: daca e pe margine, sa o puna langa.
-        //nu sa genereze iar
-        if (food->x <= 2) {
-        
-            food->x = 3;
-        }
-
-        if (food->y <= 2) {
-        
-            food->y = 3;
-        }
 
         do {
 
-            fooderr = 0;
+            fooderr = FALSE;
+
+            food->x = rand () % gboard->x;
+            food->y = rand () % gboard->y;
+
+            if (food->x <= 1){
+
+                fooderr = TRUE;
+                continue;
+            }
+
+            if (food->y <= 1){
+
+                fooderr = TRUE;
+                continue;
+            }
+
             for (i = 0; i < snake->dim; i++) {
 
                 //daca s-a generat mancare peste sarpe
                 if (food->x == snake->p[i].x) { 
+                    
                     if (food->y == snake->p[i].y) {
 
-                            srand (time (NULL));
-
-                            food->x = rand () % gboard->x;
-                            food->y = rand () % gboard->y;
-
-                            fooderr = 1;
-
-
-                            
-                            break;
+                        fooderr = TRUE;
+                        break;
                     }
                 }
            }
+
+           for (i = 0; i < 5 * snake->level; i++){
+
+                if (food->x == obst[i].x){
+
+                    if (food->y == obst[i].y){
+
+                        fooderr = TRUE;
+                        break;
+                    }
+                }
+           }
+
        }while (fooderr);
+       
        mvaddch (food->y, food->x, '*');
    }
 }
@@ -1009,7 +1017,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard) {
 
     unsigned i;
 
-    if (snake->p[HEAD].x <= 2) {
+    if (snake->p[HEAD].x <= 1) {
 
         return 1;
     }
@@ -1188,14 +1196,13 @@ void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
 
     unsigned i, j;
     unsigned obsterr;
-    
+    srand(time(NULL));
+
     for (i = 0; i < 5 * snake->level; i++){
 
 
         do{
             obsterr = FALSE;
-
-            srand(time(NULL));
 
             obst[i].x = rand() % gboard->x;
             obst[i].y = rand() % gboard->y;
@@ -1245,7 +1252,7 @@ void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
 
         }while(obsterr);
 
-        mvaddch(obst[i].y, obst[i].x, 'x');
+        mvaddch(obst[i].y, obst[i].x, ACS_DIAMOND);
 
 
     }
@@ -1344,7 +1351,7 @@ int main () {
 
                     timeout (UNITY - snake->speed);  //viteza de miscare
 
-                    foodGen (&hungry, gboard, snake, food); //generam mancarea
+                    foodGen (&hungry, gboard, snake, food, obstacle); //generam mancarea
 
                     readInput (snake);             //citim urmatoarea miscare
 
