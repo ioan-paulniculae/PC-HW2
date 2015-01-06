@@ -896,7 +896,7 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT 
            }
 
        }while (fooderr);
-       
+
        mvaddch (food->y, food->x, '*');
    }
 }
@@ -1013,10 +1013,11 @@ void positionSnake(SNAKE *snake){
     }
 }
 
-unsigned gameIsLost(SNAKE *snake, PUNCT *gboard) {
+unsigned gameIsLost(SNAKE *snake, PUNCT *gboard, PUNCT *obst) {
 
     unsigned i;
 
+    //daca a atins vreo margine
     if (snake->p[HEAD].x <= 1) {
 
         return 1;
@@ -1036,9 +1037,23 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard) {
         return 1;
     }
 
+    //daca s-a lovit de el insusi
     for (i = 1; i < snake->dim; i++) {
         if (snake->p[HEAD].x == snake->p[i].x) {
             if (snake->p[HEAD].y == snake->p[i].y) {
+                return 1;
+            }
+        }
+    }
+
+    //daca s-a lovit de obstacol
+
+    for (i = 1; i < 5 * snake->level; i++){
+
+        if (snake->p[HEAD].x == obst[i].x){
+
+            if (snake->p[HEAD].y == obst[i].y){
+
                 return 1;
             }
         }
@@ -1368,7 +1383,7 @@ int main () {
 
                     
 
-                    if (gameIsLost(snake, gboard)){     //daca s-a terminat jocul
+                    if (gameIsLost(snake, gboard, obstacle)){     //daca s-a terminat jocul
                         
                         printLoosersMSG (gboard);
                         break;
