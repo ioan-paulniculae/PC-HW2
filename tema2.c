@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include <ctype.h>
 #include <ncurses.h>
@@ -27,7 +28,6 @@ typedef struct {
     unsigned size;
 
     unsigned speed;
-    unsigned topspeed; //in functie de level
 
     unsigned level; // 1 - easy 5 - insane
     char input;
@@ -802,31 +802,26 @@ void init_snake(SNAKE *snake, unsigned *hungry){
         case 1:
 
             snake->speed = 600;
-            snake->topspeed = 750;
         break;
 
         case 2:
 
             snake->speed = 630;
-            snake->topspeed = 800;
         break;
 
         case 3:
 
             snake->speed = 630;
-            snake->topspeed = 850;
         break;
 
         case 4:
 
             snake->speed = 640;
-            snake->topspeed = 900;
         break;
 
         case 5:
 
             snake->speed = 650;
-            snake->topspeed = 970;
         break;
     }
 }
@@ -908,22 +903,26 @@ void correctInput(SNAKE *snake){
 
     unsigned mverr = FALSE;
 
-    if (snake->input == 'w' && snake->lastinput == 's') {
+    if (snake->input == 'w' 
+        && ( snake->lastinput == 's' || snake->lastinput == 'w')) {
 
         mverr = TRUE;
     }
 
-    if (snake->input == 'a' && snake->lastinput == 'd') {
+    if (snake->input == 'a' 
+        && ( snake->lastinput == 'd' || snake->lastinput == 'a')) {
         
         mverr = TRUE;
     }
 
-    if (snake->input == 's' && snake->lastinput == 'w') {
+    if (snake->input == 's' 
+        && ( snake->lastinput == 'w' || snake->lastinput == 's')) {
 
         mverr = TRUE;
     }
 
-    if (snake->input == 'd' && snake->lastinput == 'a') {
+    if (snake->input == 'd' 
+        && ( snake->lastinput == 'a'|| snake->lastinput == 'd')) {
 
         mverr = TRUE;
     }
@@ -1051,6 +1050,7 @@ unsigned hasEaten (SNAKE *snake, PUNCT *food) {
 
     return 0;
 }
+
 void snakeAccelerate (SNAKE * snake){
 
     switch (snake->level){
@@ -1146,7 +1146,7 @@ void snakeAccelerate (SNAKE * snake){
 
                     if (snake->dim <= 17){
 
-                        snake->speed += 35;
+                        snake->speed += 25;
                     }
                 }
             }
@@ -1182,6 +1182,77 @@ void paintSnake(SNAKE *snake, unsigned hungry){
     mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
 }
 
+//genereaza obstacole in functie de nivel;
+//pentru level 1 - 5 obs, lvl 2 - 10; 3 - 15...
+void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
+
+    unsigned i, j;
+    unsigned obsterr;
+    
+    for (i = 0; i < 5 * snake->level; i++){
+
+
+        do{
+            obsterr = FALSE;
+
+            srand(time(NULL));
+
+            obst[i].x = rand() % gboard->x;
+            obst[i].y = rand() % gboard->y;
+
+            //verificam daca a pus mancarea fix pe bordura
+
+            if (obst[i].x <= 2){
+
+                obsterr = TRUE;
+                continue;
+                
+            }
+
+            if (obst[i].y <= 2){
+
+                obsterr = TRUE;
+                continue;
+                
+            }
+
+            //verificam daca nu s-a generat peste pozitia initiala a sarpelui
+            //si daca nu s-a generat mult prea aproape de el, impactul fiind iminent
+            if (obst[i].y == snake->p[HEAD].y){
+
+                if (obst[i].x == snake->p[HEAD].x
+                    || (obst[i].x > snake->p[HEAD].x 
+                        && obst[i].x - snake->p[HEAD].x <= 10 - snake->level)){
+
+                    obsterr = TRUE;
+                    continue;
+                }
+            }
+
+            //verificam daca obstacolul s-a generat peste alt obstacol
+            for (j = 0; j < i; j++){
+                
+                if (obst[i].x == obst[j].x){
+                    
+                    if (obst[i].y == obst[j].y){
+                        obsterr = TRUE;
+                        break;
+                    }
+                }
+            }
+
+            
+
+        }while(obsterr);
+
+        mvaddch(obst[i].y, obst[i].x, 'x');
+
+
+    }
+}
+
+//folosind aceeasi viteza, pe y sarpele se misca mult mai repede decat pe x.
+//corectare prin functie care in momentul schimbarii axelor creste sau scade viteza pentru a da impresia ca e constanta.
 void adjustSpeed(SNAKE *snake, PUNCT *gboard){
 
     if (snake->input == 'w' || snake->input == 's'){
@@ -1214,27 +1285,25 @@ int main () {
     
     //nobuffering
     cbreak ();
-
-    
     PUNCT *gboard;
     PUNCT *food;
+    PUNCT *obstacle;
+
+    SNAKE *snake;
+
+    unsigned hungry;        //1 = daca nu e mancare pe tabla
+    unsigned op;                 //2 - game, 1- options 0 - quit    
 
     gboard = (PUNCT *) malloc (sizeof(PUNCT));
     food = (PUNCT *) malloc (sizeof(PUNCT));
-    
-    SNAKE *snake;
+    obstacle = (PUNCT *) malloc (sizeof(PUNCT));
     snake = (SNAKE *) malloc (sizeof(SNAKE));
-
-    unsigned hungry;		//1 = daca nu e mancare pe tabla
 
     snake->size = 1;
     snake->level = 1;
-
-    unsigned op;                 //2 - game, 1- options 0 - quit
-
+    unsigned i;
     initscr();
     init_window ();
-
 
     while (NO_STOP){
 
@@ -1255,11 +1324,21 @@ int main () {
 
             case 2:                 //utilizatorul doreste sa joace
 
+                //initializam tabla
                 init_game (snake, gboard);
                 
+                //initializam sarpele
                 init_snake (snake, &hungry);
 
+                //realocam memorie in caz ca s-a modificat nivelul, deci si numarul de obstacole
+                obstacle = (PUNCT *) realloc(obstacle, 5 * snake->level * sizeof(PUNCT));
+
+                //generam obstacolele
+                obstacleGen(obstacle, snake, gboard);
+
                 while (NO_STOP) {   //incepe jocul
+
+                    mvprintw(0, 0, "x:%d, y:%d", snake->p[HEAD].x, snake->p[HEAD].y);
 
                     updatesnake(snake);                //actualizarea coordonatelor
 
@@ -1298,8 +1377,6 @@ int main () {
 
                     paintSnake(snake, hungry);  //inainteaza capul o pozitie, si se sterge coada
 
-
-                    mvprintw(0, 0, "dim:%d, speed: %d, level:%d", snake->dim, snake->speed, snake->level);
                     refresh ();
 
                 }
