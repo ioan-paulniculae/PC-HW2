@@ -1,15 +1,13 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <time.h>
 #include <ctype.h>
 #include <ncurses.h>
 
-#define SPATIERE 0
 #define NO_STOP 1
 #define HEAD 0
 #define UNITY 1000
-#define Y 11
-#define X 12
+#define Y 21
+#define X 22
 
 typedef struct {
   
@@ -34,19 +32,20 @@ typedef struct {
     char lastinput;
 } SNAKE;
 
-void init_window () {
+void init_window (PUNCT *gboard) {
 
-  //initializare
+    //initializare
     raw ();
+    getmaxyx (stdscr, gboard->y, gboard->x);
 
-  //mesaj initial
+    //mesaj initial
     attron (A_UNDERLINE | A_BOLD);
        
-        mvprintw (0, 3, "SNAKE");
-        mvprintw (1, 1, "W - inainte");
-        mvprintw (2, 1, "A - stanga");
-        mvprintw (3, 1, "S - jos");
-        mvprintw (4, 1, "D - dreapta");
+        mvprintw (gboard->y / 3, gboard->x / 2 - 5, "SNAKE");
+        mvprintw (gboard->y / 3 + 1, gboard->x / 2 - 5, "W - inainte");
+        mvprintw (gboard->y / 3 + 2, gboard->x / 2 - 5, "A - stanga");
+        mvprintw (gboard->y / 3 + 3, gboard->x / 2 - 5, "S - jos");
+        mvprintw (gboard->y / 3 + 4, gboard->x / 2 - 5, "D - dreapta");
     
     attroff (A_UNDERLINE | A_BOLD);
 
@@ -58,29 +57,27 @@ void init_window () {
 
 
 
-    mvprintw (10, 10, "Apasa orice tasta");
+    mvprintw (gboard->y / 3 + 6, gboard->x / 2 - 5, "Apasa orice tasta");
     
     getch ();
     clear ();
 }
 
-unsigned main_menu () {
+unsigned main_menu (PUNCT *gboard) {
 
     PUNCT p;
 
-    p.x = 30;
-    p.y = 12;
+    p.x = gboard->x / 2 - 5;
+    p.y = gboard->y / 3;
 
     clear ();
-
-    attron (A_UNDERLINE | A_BOLD);
-        
-        mvaddstr (p.y - 2, p.x, "NEW GAME");
     
+    attron (A_UNDERLINE | A_BOLD);
+        mvaddstr (gboard->y / 3, p.x, "NEW GAME");
     attroff (A_UNDERLINE | A_BOLD);
 
-    mvaddstr (p.y - 1, p.x, "OPTIONS");
-    mvaddstr (p.y, p.x, "EXIT");
+    mvaddstr (gboard->y / 3 + 1, p.x, "OPTIONS");
+    mvaddstr (gboard->y / 3 + 2, p.x, "EXIT");
 
     char c;
 
@@ -92,18 +89,18 @@ unsigned main_menu () {
         switch (c) {
             case 'w':
         
-                if (p.y < 12) {
+                if (p.y > gboard->y / 3) {
                
-                    p.y++;
+                    p.y--;
                 }
 
             break;
 
             case 's':
 
-                if (p.y > 10) {
+                if (p.y < gboard->y / 3 + 2) {
                 
-                    p.y--;
+                    p.y++;
                 }
 
             break;
@@ -111,64 +108,66 @@ unsigned main_menu () {
             case '\n':
            
                 clear ();
-                return p.y - 10;
-        
+                if (p.y == gboard->y / 3){
+                    
+                    return 2;
+                }
+
+                if (p.y ==gboard ->y / 3 + 1){
+                    
+                    return 1;
+                }
+
+                return 0;
             break;
 
             default:
             break;
         }
 
-        switch (p.y) {
-
-            case 12:
+        if (p.y == gboard->y / 3){
                
-                clear ();
+            clear ();
+            
+            attron (A_UNDERLINE | A_BOLD);
+            
+                mvaddstr (gboard->y / 3, p.x, "NEW GAME");
+            
+            attroff (A_UNDERLINE | A_BOLD);
+
+            mvaddstr (gboard->y / 3 + 1, p.x, "OPTIONS");
+            mvaddstr (gboard->y / 3 + 2, p.x, "EXIT");
+
+        }
+
+        if (p.y == gboard->y / 3 + 1){
                 
-                attron (A_UNDERLINE | A_BOLD);
-                
-                    mvaddstr (p.y - 2, p.x, "NEW GAME");
-                
-                attroff (A_UNDERLINE | A_BOLD);
+            clear ();
+            
+            mvaddstr (gboard->y / 3, p.x, "NEW GAME");
 
-                mvaddstr (p.y - 1, p.x, "OPTIONS");
-                mvaddstr (p.y, p.x, "EXIT");
+            attron (A_UNDERLINE | A_BOLD);
+            
+                mvaddstr (gboard->y / 3 + 1, p.x, "OPTIONS");
+            
+            attroff (A_UNDERLINE | A_BOLD);
 
-            break;
+            mvaddstr (gboard->y / 3 + 2, p.x, "EXIT");
 
-            case 11:
-                
-                clear ();
-                
-                mvaddstr (p.y - 1, p.x, "NEW GAME");
+        }
 
-                attron (A_UNDERLINE | A_BOLD);
-                
-                    mvaddstr (p.y, p.x, "OPTIONS");
-                
-                attroff (A_UNDERLINE | A_BOLD);
+        if(p.y == gboard->y / 3 + 2){
 
-                mvaddstr (p.y + 1, p.x, "EXIT");
+            clear ();
 
-            break;
+            mvaddstr (gboard->y / 3, p.x, "NEW GAME");
+            mvaddstr (gboard->y / 3 + 1, p.x, "OPTIONS");
 
-            case 10:
+            attron (A_UNDERLINE | A_BOLD);
 
-                clear ();
-
-                mvaddstr (p.y, p.x, "NEW GAME");
-                mvaddstr (p.y + 1, p.x, "OPTIONS");
-
-                attron (A_UNDERLINE | A_BOLD);
-
-                    mvaddstr (p.y + 2, p.x, "EXIT");
-                
-                attroff (A_UNDERLINE | A_BOLD);
-   
-            break;
-
-            default:
-            break;
+                mvaddstr (gboard->y / 3 + 2, p.x, "EXIT");
+            
+            attroff (A_UNDERLINE | A_BOLD);
         }
 
         refresh ();
@@ -178,7 +177,6 @@ unsigned main_menu () {
 
     return 1;
 }
-
 
 //functie care permite utilizatorului sa aleaga nivelul de 
 //dificultate si dimensiunea initiala
@@ -733,16 +731,16 @@ void create_gameboard (unsigned dim_x, unsigned dim_y) {
       
         if (i % 2) {
          
-            mvaddch (SPATIERE, i, '#');
+            mvaddch (0, i, '#');
         }
         else {
          
-            mvaddch (SPATIERE, i, ' ');
+            mvaddch (0, i, ' ');
         }
     }
     
     //dreapta
-    for (i = SPATIERE; i < dim_y; i++) {
+    for (i = 0; i < dim_y; i++) {
         
         mvaddch (i, dim_x, '#');
     }
@@ -761,7 +759,7 @@ void create_gameboard (unsigned dim_x, unsigned dim_y) {
     }
 
     //stanga
-    for (i = SPATIERE; i < dim_y; i++){
+    for (i = 0; i < dim_y; i++){
 
         mvaddch (i, 1, '#');
     }
@@ -832,8 +830,7 @@ void updatesnake (SNAKE *snake){
 
     for (i = snake->dim; i > 0; i--){
 
-         snake->p[i].x = snake->p[i - 1].x;
-         snake->p[i].y = snake->p[i - 1].y;
+         snake->p[i] = snake->p[i - 1];
      }
 
     snake->last_x = snake->p[snake->dim].x;
@@ -899,6 +896,74 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT 
 
        mvaddch (food->y, food->x, '*');
    }
+}
+
+//genereaza obstacole in functie de nivel;
+//pentru level 1 - 5 obs, lvl 2 - 10; 3 - 15...
+void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
+
+    unsigned i, j;
+    unsigned obsterr;
+    srand(time(NULL));
+
+    for (i = 0; i < 5 * snake->level; i++){
+
+
+        do{
+            obsterr = FALSE;
+
+            obst[i].x = rand() % gboard->x;
+            obst[i].y = rand() % gboard->y;
+
+            //verificam daca a pus mancarea fix pe bordura
+
+            if (obst[i].x <= 2){
+
+                obsterr = TRUE;
+                continue;
+                
+            }
+
+            if (obst[i].y <= 2){
+
+                obsterr = TRUE;
+                continue;
+                
+            }
+
+            //verificam daca nu s-a generat peste pozitia initiala a sarpelui
+            //si daca nu s-a generat mult prea aproape de el, impactul fiind iminent
+            if (obst[i].y == snake->p[HEAD].y){
+
+                if (obst[i].x == snake->p[HEAD].x
+                    || (obst[i].x > snake->p[HEAD].x 
+                        && obst[i].x - snake->p[HEAD].x <= 10 - snake->level)){
+
+                    obsterr = TRUE;
+                    continue;
+                }
+            }
+
+            //verificam daca obstacolul s-a generat peste alt obstacol
+            for (j = 0; j < i; j++){
+                
+                if (obst[i].x == obst[j].x){
+                    
+                    if (obst[i].y == obst[j].y){
+                        obsterr = TRUE;
+                        break;
+                    }
+                }
+            }
+
+            
+
+        }while(obsterr);
+
+        mvaddch(obst[i].y, obst[i].x, ACS_DIAMOND);
+
+
+    }
 }
 
 void readInput(SNAKE *snake){
@@ -1205,74 +1270,6 @@ void paintSnake(SNAKE *snake, unsigned hungry){
     mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
 }
 
-//genereaza obstacole in functie de nivel;
-//pentru level 1 - 5 obs, lvl 2 - 10; 3 - 15...
-void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
-
-    unsigned i, j;
-    unsigned obsterr;
-    srand(time(NULL));
-
-    for (i = 0; i < 5 * snake->level; i++){
-
-
-        do{
-            obsterr = FALSE;
-
-            obst[i].x = rand() % gboard->x;
-            obst[i].y = rand() % gboard->y;
-
-            //verificam daca a pus mancarea fix pe bordura
-
-            if (obst[i].x <= 2){
-
-                obsterr = TRUE;
-                continue;
-                
-            }
-
-            if (obst[i].y <= 2){
-
-                obsterr = TRUE;
-                continue;
-                
-            }
-
-            //verificam daca nu s-a generat peste pozitia initiala a sarpelui
-            //si daca nu s-a generat mult prea aproape de el, impactul fiind iminent
-            if (obst[i].y == snake->p[HEAD].y){
-
-                if (obst[i].x == snake->p[HEAD].x
-                    || (obst[i].x > snake->p[HEAD].x 
-                        && obst[i].x - snake->p[HEAD].x <= 10 - snake->level)){
-
-                    obsterr = TRUE;
-                    continue;
-                }
-            }
-
-            //verificam daca obstacolul s-a generat peste alt obstacol
-            for (j = 0; j < i; j++){
-                
-                if (obst[i].x == obst[j].x){
-                    
-                    if (obst[i].y == obst[j].y){
-                        obsterr = TRUE;
-                        break;
-                    }
-                }
-            }
-
-            
-
-        }while(obsterr);
-
-        mvaddch(obst[i].y, obst[i].x, ACS_DIAMOND);
-
-
-    }
-}
-
 //folosind aceeasi viteza, pe y sarpele se misca mult mai repede decat pe x.
 //corectare prin functie care in momentul schimbarii axelor creste sau scade viteza pentru a da impresia ca e constanta.
 void adjustSpeed(SNAKE *snake, PUNCT *gboard){
@@ -1323,13 +1320,12 @@ int main () {
 
     snake->size = 1;
     snake->level = 1;
-
     initscr();
-    init_window ();
+    init_window (gboard);
 
     while (NO_STOP){
 
-        op = main_menu ();          // din main menu, utilizatorul alege optiunea
+        op = main_menu (gboard);          // din main menu, utilizatorul alege optiunea
 
         switch (op){
 
@@ -1382,9 +1378,7 @@ int main () {
                         break;
                     }
 
-                    positionSnake (snake);            //in urma inputului, repozitionam sarpele
-
-                    
+                    positionSnake (snake);            //in urma inputului, repozitionam sarpele   
 
                     if (gameIsLost(snake, gboard, obstacle)){     //daca s-a terminat jocul
                         
