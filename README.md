@@ -21,5 +21,21 @@ Main menu;
 Different Levels;
 Choose intial Size;
 Special food - TODO;
-Score + Highscore - TODO;
+Score + Highscore - Score DONE, HighScore - Ideea Dumped;
+
+Changelog:
+
+made all progr with functions;
+added pointers;
+foodgen v2.0;
+started menu;
+added options;
+foodgen v2.1;
+levels;
+foodgen v3.0; -final fix; (hopefully)
+acceleration accordin to difficulty;
+obstgen v1.0
+foodgen v3.1 -do not generate over obstacles
+gameislost v1.1 - end game if smacked into obstacle
+score
 
