@@ -2,7 +2,6 @@
 #include <time.h>
 #include <ctype.h>
 #include <ncurses.h>
-#include <stdio.h>
 
 #define NO_STOP 1
 #define HEAD 0
@@ -771,6 +770,9 @@ void create_gameboard (unsigned dim_x, unsigned dim_y) {
 
 void init_game (SNAKE *snake, PUNCT *gboard){
 
+    
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+
     getmaxyx (stdscr, gboard->y, gboard->x); //aflam dimensiunile maxime ale tablei de joc
 
     gboard->x--;      //din motive de aspect, folosim un chenar un pic mai mic
@@ -788,8 +790,10 @@ void init_game (SNAKE *snake, PUNCT *gboard){
      
     snake->p[HEAD].x = gboard->x / 3;  //intializam coordonatele capului sarpelui
     snake->p[HEAD].y = gboard->y / 3;
-     
-    mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');    //adaugam pe tabla sarpele
+    
+    attron (A_BOLD | COLOR_PAIR (1));
+        mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');    //adaugam pe tabla sarpele
+    attroff(A_BOLD | COLOR_PAIR(1));
 }
 
 void init_snake(SNAKE *snake, unsigned *hungry){
@@ -850,6 +854,8 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT 
     unsigned fooderr;
     unsigned i;
 
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+
     if (*hungry) {
         
         *hungry = FALSE;
@@ -901,7 +907,9 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT 
 
        }while (fooderr);
 
-       mvaddch (food->y, food->x, '*');
+        attron(A_BOLD | COLOR_PAIR(3));
+            mvaddch (food->y, food->x, '*');
+        attroff(A_BOLD | COLOR_PAIR(3));
    }
 }
 
@@ -912,6 +920,7 @@ void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
     unsigned i, j;
     unsigned obsterr;
     srand(time(NULL));
+    init_pair(2, COLOR_RED, COLOR_BLACK);
 
     for (i = 0; i < OBST * snake->level; i++){
 
@@ -967,8 +976,9 @@ void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
 
         }while(obsterr);
 
-        mvaddch(obst[i].y, obst[i].x, ACS_DIAMOND);
-
+        attron (COLOR_PAIR (2));
+            mvaddch(obst[i].y, obst[i].x, ACS_DIAMOND);
+        attroff (COLOR_PAIR(2));
 
     }
 }
@@ -1264,18 +1274,25 @@ void refreshSnake(SNAKE *snake){
 }
 
 void paintSnake(SNAKE *snake, unsigned hungry){
+    
 
     if (!hungry) {
- 
-        mvaddch (snake->last_y, snake->last_x, ' ');
+      
+        attron(A_BOLD | COLOR_PAIR(1));
+            mvaddch (snake->p[HEAD + 1].y, snake->p[HEAD + 1].x, 'o');
+            mvaddch (snake->last_y, snake->last_x, ' ');
+        attroff(A_BOLD | COLOR_PAIR(1));
     }
-    else
-    {
-    
-        mvaddch (snake->last_y, snake->last_x, 'O');
+    else{
+        
+        attron(A_BOLD | COLOR_PAIR(1));
+            mvaddch (snake->last_y, snake->last_x, 'o');
+        attroff(A_BOLD | COLOR_PAIR(1));
     }
 
-    mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
+    attron(A_BOLD | COLOR_PAIR(1));
+        mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');
+    attroff(A_BOLD | COLOR_PAIR(1));
 }
 
 //folosind aceeasi viteza, pe y sarpele se misca mult mai repede decat pe x.
@@ -1329,7 +1346,10 @@ int main () {
     snake->size = 1;
     snake->level = 1;
     initscr();
+    start_color();
     init_window (gboard);
+
+    
 
     while (NO_STOP){
 
