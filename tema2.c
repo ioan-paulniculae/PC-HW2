@@ -2,12 +2,14 @@
 #include <time.h>
 #include <ctype.h>
 #include <ncurses.h>
+#include <stdio.h>
 
 #define NO_STOP 1
 #define HEAD 0
 #define UNITY 1000
-#define Y 21
-#define X 22
+#define OBST 10
+#define Y 11
+#define X 12
 
 typedef struct {
   
@@ -26,6 +28,8 @@ typedef struct {
     unsigned size;
 
     unsigned speed;
+
+    unsigned score;
 
     unsigned level; // 1 - easy 5 - insane
     char input;
@@ -793,6 +797,7 @@ void init_snake(SNAKE *snake, unsigned *hungry){
     *hungry = 1;
     snake->lastinput = 'd';
     snake->dim = snake->size;
+    snake->score = 0;
 
     //setari in functie de nivel
     switch(snake->level){
@@ -835,6 +840,8 @@ void updatesnake (SNAKE *snake){
 
     snake->last_x = snake->p[snake->dim].x;
     snake->last_y = snake->p[snake->dim].y;
+
+    mvprintw(0, 5, "Dificulate:%d Dimensiune:%d SCOR:%d", snake->level, snake->size, snake->score);
 }
 
 //generatorul de mancare
@@ -880,7 +887,7 @@ void foodGen (unsigned *hungry, PUNCT *gboard, SNAKE *snake, PUNCT *food, PUNCT 
                 }
            }
 
-           for (i = 0; i < 5 * snake->level; i++){
+           for (i = 0; i < OBST * snake->level; i++){
 
                 if (food->x == obst[i].x){
 
@@ -906,7 +913,7 @@ void obstacleGen(PUNCT *obst, SNAKE *snake, PUNCT *gboard){
     unsigned obsterr;
     srand(time(NULL));
 
-    for (i = 0; i < 5 * snake->level; i++){
+    for (i = 0; i < OBST * snake->level; i++){
 
 
         do{
@@ -1093,7 +1100,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard, PUNCT *obst) {
         return 1;
     }
 
-    if (snake->p[HEAD].y <= 1) {
+    if (snake->p[HEAD].y == 0) {
 
         return 1;
     }
@@ -1113,7 +1120,7 @@ unsigned gameIsLost(SNAKE *snake, PUNCT *gboard, PUNCT *obst) {
 
     //daca s-a lovit de obstacol
 
-    for (i = 1; i < 5 * snake->level; i++){
+    for (i = 1; i < OBST * snake->level; i++){
 
         if (snake->p[HEAD].x == obst[i].x){
 
@@ -1247,6 +1254,7 @@ void makeSnakeFatAndFurious(SNAKE *snake, unsigned * hungry){
     *hungry = 1;
     snakeAccelerate(snake);
     snake->dim++;
+    snake->score += snake->level;
 }
 
 void refreshSnake(SNAKE *snake){
@@ -1354,7 +1362,7 @@ int main () {
                 init_snake (snake, &hungry);
 
                 //realocam memorie in caz ca s-a modificat nivelul, deci si numarul de obstacole
-                obstacle = (PUNCT *) realloc(obstacle, 5 * snake->level * sizeof(PUNCT));
+                obstacle = (PUNCT *) realloc(obstacle, OBST * snake->level * sizeof(PUNCT));
 
                 //generam obstacolele
                 obstacleGen(obstacle, snake, gboard);
