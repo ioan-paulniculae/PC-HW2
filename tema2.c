@@ -2,6 +2,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <ncurses.h>
+#include <stdio.h>
 
 #define NO_STOP 1
 #define HEAD 0
