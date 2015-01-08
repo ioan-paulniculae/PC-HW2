@@ -728,7 +728,10 @@ void customise (SNAKE *snake) {
 void create_gameboard (unsigned dim_x, unsigned dim_y) {
 
     int i;
-
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    
+    attron(COLOR_PAIR(4));
+    
     //sus
     for (i = 1; i < dim_x + 1; i++) {
       
@@ -766,12 +769,15 @@ void create_gameboard (unsigned dim_x, unsigned dim_y) {
 
         mvaddch (i, 1, '#');
     }
+
+    attroff(COLOR_PAIR(4));
 }
 
 void init_game (SNAKE *snake, PUNCT *gboard){
 
     
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
 
     getmaxyx (stdscr, gboard->y, gboard->x); //aflam dimensiunile maxime ale tablei de joc
 
@@ -794,6 +800,10 @@ void init_game (SNAKE *snake, PUNCT *gboard){
     attron (A_BOLD | COLOR_PAIR (1));
         mvaddch (snake->p[HEAD].y, snake->p[HEAD].x, 'O');    //adaugam pe tabla sarpele
     attroff(A_BOLD | COLOR_PAIR(1));
+
+    attron(A_BOLD | COLOR_PAIR(5));
+        mvaddstr(0, gboard->x / 3, "Dificulate:   Dimensiune:      SCOR: ");
+    attroff(A_BOLD | COLOR_PAIR(5));
 }
 
 void init_snake(SNAKE *snake, unsigned *hungry){
@@ -833,9 +843,11 @@ void init_snake(SNAKE *snake, unsigned *hungry){
     }
 }
 
-void updatesnake (SNAKE *snake){
+void updateit (SNAKE *snake, PUNCT *gboard){
     
     unsigned i;
+
+    init_pair(6, COLOR_RED, COLOR_BLACK);
 
     for (i = snake->dim; i > 0; i--){
 
@@ -845,7 +857,12 @@ void updatesnake (SNAKE *snake){
     snake->last_x = snake->p[snake->dim].x;
     snake->last_y = snake->p[snake->dim].y;
 
-    mvprintw(0, 5, "Dificulate:%d Dimensiune:%d SCOR:%d", snake->level, snake->size, snake->score);
+
+    attron(A_BOLD | COLOR_PAIR(6));
+        mvprintw(0, gboard->x / 3 + 12, "%d", snake->level);
+        mvprintw(0, gboard->x / 3 + 26, "%d", snake->dim);
+        mvprintw(0, gboard->x / 3 + 37, "%d", snake->score);
+    attroff(A_BOLD | COLOR_PAIR(6));
 }
 
 //generatorul de mancare
@@ -1389,7 +1406,7 @@ int main () {
 
                 while (NO_STOP) {   //incepe jocul
 
-                    updatesnake(snake);                //actualizarea coordonatelor
+                    updateit(snake, gboard);                //actualizarea coordonatelor
 
                     timeout (UNITY - snake->speed);  //viteza de miscare
 
